@@ -1,0 +1,395 @@
+---
+
+description: "Task list for feature implementation"
+---
+
+# Tasks: Hero Management
+
+**Input**: Design documents from `/specs/001-hero-management/`
+
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/heroes-api.md, quickstart.md
+
+**Organization**: Per explicit user request, tasks are organized by **implementation layer/phase**
+(infrastructure → backend → frontend → tests → docs) rather than strictly by user story. Where a
+task implements behavior specific to one user story, it carries a `[USn]` label for traceability
+back to spec.md:
+
+- **US1** = Browse and search heroes (P1)
+- **US2** = Create a hero (P2)
+- **US3** = Edit an active hero (P3)
+- **US4** = Activate/deactivate a hero (P4)
+- **US5** = Permanently delete an active hero (P5)
+
+Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all stories depend on.
+
+## Format: `[ID] [P?] [Story?] Description`
+
+- **[P]**: Can run in parallel (different files, no dependencies on incomplete tasks)
+- **[Story]**: Traceability label to a user story (US1–US5), omitted for infra/foundation tasks
+- Every task includes an exact file path
+
+---
+
+## Phase 1: Root npm workspace and repository configuration
+
+**Purpose**: Establish the monorepo skeleton before any app code exists.
+
+- [ ] T001 Create root `package.json` declaring npm workspaces `["apps/*"]` and shared scripts (`dev`, `build`, `test`, `lint`)
+- [ ] T002 [P] Create root `.gitignore` (node_modules, dist/build output, `.env`, coverage)
+- [ ] T003 [P] Create root `.env.example` with Docker Compose variables (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `MYSQL_PORT`)
+- [ ] T004 [P] Create root `apps/` directory with empty `apps/api/` and `apps/web/` placeholders so workspaces resolve
+
+**Checkpoint**: `npm install` at root succeeds with two empty workspaces registered.
+
+---
+
+## Phase 2: Docker Compose and MySQL infrastructure
+
+**Purpose**: Reproducible local database, independent of app code (Constitution Principle XIII).
+
+- [ ] T005 Create root `docker-compose.yml` defining a `mysql:8` service with a persistent named volume, env-driven database name/user/password (reading root `.env`), an exposed development port, and a healthcheck
+- [ ] T006 [P] Create `apps/api/.env.example` with `DATABASE_URL` (matching the compose service's credentials/port) and `PORT`
+
+**Checkpoint**: `docker compose up -d` starts MySQL and `docker compose ps` reports it healthy.
+
+---
+
+## Phase 3: NestJS API foundation
+
+**Purpose**: Bootable Nest app shell with global validation and error handling, before any Hero-specific code.
+
+- [ ] T007 Initialize `apps/api` as a NestJS project: `apps/api/package.json`, `apps/api/tsconfig.json` (`strict: true`), `apps/api/nest-cli.json`
+- [ ] T008 [P] Configure `apps/api/.eslintrc.js` and `apps/api/.prettierrc`
+- [ ] T009 Create `apps/api/src/main.ts` bootstrapping the Nest app with a global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`)
+- [ ] T010 [P] Create `apps/api/src/common/filters/http-exception.filter.ts` translating unknown/Prisma errors into the consistent `{ statusCode, error, message }` shape from `contracts/heroes-api.md`, never leaking ORM/DB internals
+- [ ] T011 Register the global exception filter in `apps/api/src/main.ts`
+- [ ] T012 Create `apps/api/src/app.module.ts` importing `PrismaModule` (Phase 4) and `HeroesModule` (Phase 7) — module wiring only, placeholders acceptable until those modules exist
+
+**Checkpoint**: `apps/api` boots (`npm run start:dev --workspace apps/api`) and returns Nest's default 404 for unknown routes with the standard error shape.
+
+---
+
+## Phase 4: Prisma schema and initial migration
+
+**Purpose**: Version-controlled schema for the single Hero entity (Constitution Principle VII).
+
+- [ ] T013 Add Prisma to `apps/api` and initialize `apps/api/prisma/schema.prisma` with a MySQL datasource reading `DATABASE_URL`
+- [ ] T014 Define the `Hero` model in `apps/api/prisma/schema.prisma` per `data-model.md`: `id` (UUID, `@id @default(uuid())`), `name`, `nickname`, `date_of_birth` (Date), `universe`, `main_power`, `avatar_url`, `is_active` (Boolean, `@default(true)`), `created_at` (`@default(now())`), `updated_at` (`@updatedAt`)
+- [ ] T015 Generate the initial Prisma migration (`prisma migrate dev --name init_heroes`), producing `apps/api/prisma/migrations/.../migration.sql`
+- [ ] T016 [P] Create `apps/api/src/prisma/prisma.service.ts` (PrismaClient wrapper implementing `OnModuleInit`/`OnModuleDestroy`)
+- [ ] T017 [P] Create `apps/api/src/prisma/prisma.module.ts` exporting `PrismaService`
+
+**Checkpoint**: `prisma migrate deploy` against the Docker MySQL instance succeeds; `heroes` table exists with exactly the 10 required columns.
+
+---
+
+## Phase 5: Hero persistence repository
+
+**Purpose**: The single sanctioned abstraction (Constitution Principle III) isolating persistence from business rules.
+
+- [ ] T018 Define the `HeroesRepository` interface in `apps/api/src/heroes/heroes.repository.ts` (`create`, `findMany({page, search})`, `findById`, `update`, `updateStatus`, `delete`)
+- [ ] T019 Implement `PrismaHeroesRepository` in `apps/api/src/heroes/prisma-heroes.repository.ts`, satisfying `HeroesRepository` via `PrismaService` (search as case-insensitive `OR` on `name`/`nickname`, ordering `created_at DESC, id DESC`, `LIMIT 10` pagination)
+- [ ] T020 [P] Create `apps/api/src/heroes/entities/hero.entity.ts` (TypeScript type for the exact 10-field hero representation)
+
+**Checkpoint**: Repository can be instantiated and exercised against the live MySQL instance in a scratch script (no service/controller yet).
+
+---
+
+## Phase 6: Hero business service
+
+**Purpose**: All business rules enforced server-side (Constitution Principle V), independent of transport/persistence.
+
+- [ ] T021 [US1] Implement `HeroesService.list(page, search)` in `apps/api/src/heroes/heroes.service.ts`, returning hero data plus pagination metadata (`page`, `limit`, `total`, `totalPages`)
+- [ ] T022 [P] Create `apps/api/src/heroes/avatar-url-validator.ts` implementing the image-URL verification helper (HEAD/GET request, 2xx + `Content-Type: image/*`, timeout) per `research.md`
+- [ ] T023 [US2] Implement `HeroesService.create(dto)` in `apps/api/src/heroes/heroes.service.ts`: forces `is_active = true`, calls the avatar-URL validator, rejects on failure (depends on T022)
+- [ ] T024 [US1] Implement `HeroesService.findOne(id)` in `apps/api/src/heroes/heroes.service.ts`, throwing `NotFoundException` when missing
+- [ ] T025 [US3] Implement `HeroesService.update(id, dto)` in `apps/api/src/heroes/heroes.service.ts`: throws `ConflictException` if the hero is inactive, re-validates `avatar_url` via the validator when present in the dto
+- [ ] T026 [US4] Implement `HeroesService.updateStatus(id, isActive)` in `apps/api/src/heroes/heroes.service.ts`: changes only `is_active`, relies on the repository/Prisma to refresh `updated_at`
+- [ ] T027 [US5] Implement `HeroesService.remove(id)` in `apps/api/src/heroes/heroes.service.ts`: throws `ConflictException` if the hero is inactive, otherwise hard-deletes via the repository
+
+**Checkpoint**: Business rules are implementable and reasoned about without any HTTP layer existing yet.
+
+---
+
+## Phase 7: REST controllers and validation
+
+**Purpose**: Thin transport layer over the service, with DTO-based request validation (Constitution Principle VI).
+
+- [ ] T028 [P] Create `apps/api/src/heroes/dto/create-hero.dto.ts` with class-validator decorators for the 6 creatable fields (required, length bounds, date not in the future, URL format)
+- [ ] T029 [P] Create `apps/api/src/heroes/dto/update-hero.dto.ts` (`PartialType` of the create DTO, restricted to the 6 editable fields)
+- [ ] T030 [P] Create `apps/api/src/heroes/dto/update-hero-status.dto.ts` validating a required `is_active` boolean
+- [ ] T031 [P] Create `apps/api/src/heroes/dto/list-heroes-query.dto.ts` validating `page` (positive integer, default 1) and optional `search` (string)
+- [ ] T032 [US2] Implement `POST /heroes` in `apps/api/src/heroes/heroes.controller.ts` calling `HeroesService.create`, returning `201`
+- [ ] T033 [US1] Implement `GET /heroes` in `apps/api/src/heroes/heroes.controller.ts` using `ListHeroesQueryDto`, returning the paginated response shape from `contracts/heroes-api.md`
+- [ ] T034 [US1] Implement `GET /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts`, returning `404` when not found
+- [ ] T035 [US3] Implement `PATCH /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts` using `UpdateHeroDto`, returning `409` when the target hero is inactive
+- [ ] T036 [US4] Implement `PATCH /heroes/:id/status` in `apps/api/src/heroes/heroes.controller.ts` using `UpdateHeroStatusDto`
+- [ ] T037 [US5] Implement `DELETE /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts`, returning `204` on success and `409` when the target hero is inactive
+- [ ] T038 Create `apps/api/src/heroes/heroes.module.ts` wiring the controller, `HeroesService`, and the `HeroesRepository` provider (bound to `PrismaHeroesRepository`); import it in `apps/api/src/app.module.ts`
+
+**Checkpoint**: Full REST API is live and manually testable via curl/Postman against all 6 endpoints in `contracts/heroes-api.md`.
+
+---
+
+## Phase 8: Backend unit tests
+
+**Purpose**: Prioritize business-rule correctness in isolation (Constitution Principle VIII), using a fake `HeroesRepository`.
+
+- [ ] T039 [P] [US2] Write `apps/api/test/unit/heroes.service.spec.ts` test: `create()` always sets `is_active` to `true` regardless of input
+- [ ] T040 [P] [US3] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `update()` rejects when the target hero is inactive
+- [ ] T041 [P] [US5] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `remove()` rejects when the target hero is inactive
+- [ ] T042 [P] [US4] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `updateStatus()` activates an inactive hero
+- [ ] T043 [P] [US4] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `updateStatus()` deactivates an active hero and changes only `is_active` (and `updated_at`)
+
+**Checkpoint**: `npm run test --workspace apps/api` (unit) passes with all five business rules covered.
+
+---
+
+## Phase 9: Backend integration tests
+
+**Purpose**: Verify full HTTP behavior end-to-end against a real (test) database, per `contracts/heroes-api.md`.
+
+- [ ] T044 [P] [US2] Write `apps/api/test/integration/heroes.e2e-spec.ts` test: `POST /heroes` creates a hero and returns `201` with the exact 10-field representation
+- [ ] T045 [P] [US1] Write integration test: `GET /heroes` returns heroes ordered by `created_at` descending
+- [ ] T046 [P] [US1] Write integration test: `GET /heroes?search=` filters case-insensitively by `name` or `nickname`
+- [ ] T047 [P] [US1] Write integration test: `GET /heroes` returns exactly 10 items per page with correct pagination metadata across multiple pages
+- [ ] T048 [P] [US3] Write integration test: `PATCH /heroes/:id` updates an active hero successfully
+- [ ] T049 [P] [US3] Write integration test: `PATCH /heroes/:id` returns `409` for an inactive hero
+- [ ] T050 [P] [US4] Write integration test: `PATCH /heroes/:id/status` toggles `is_active` and leaves all other fields except `updated_at` unchanged
+- [ ] T051 [P] [US5] Write integration test: `DELETE /heroes/:id` removes an active hero; a subsequent `GET /heroes/:id` returns `404`
+- [ ] T052 [P] [US5] Write integration test: `DELETE /heroes/:id` returns `409` for an inactive hero
+- [ ] T053 [P] Write integration test: `POST /heroes` and `PATCH /heroes/:id` return `400` with structured validation messages for invalid input, including a non-image `avatar_url`
+
+**Checkpoint**: `npm run test:e2e --workspace apps/api` passes; backend is feature-complete and independently verifiable.
+
+---
+
+## Phase 10: React/Vite frontend foundation
+
+**Purpose**: Bootable SPA shell before any Hero-specific UI exists.
+
+- [ ] T054 Initialize `apps/web` as a Vite + React + TypeScript project: `apps/web/package.json`, `apps/web/tsconfig.json` (`strict: true`), `apps/web/vite.config.ts`, `apps/web/index.html`
+- [ ] T055 [P] Install Material UI and configure a `ThemeProvider` in `apps/web/src/app/App.tsx`
+- [ ] T056 [P] Create `apps/web/.env.example` with `VITE_API_BASE_URL`
+- [ ] T057 [P] Configure Vitest + React Testing Library in `apps/web/vite.config.ts` (test section) and `apps/web/vitest.setup.ts`
+- [ ] T058 Create `apps/web/src/main.tsx` rendering `<App />`
+
+**Checkpoint**: `npm run dev --workspace apps/web` serves a blank themed page.
+
+---
+
+## Phase 11: Hero API client and TanStack Query setup
+
+**Purpose**: All server state centralized in TanStack Query (no Redux), per plan.md.
+
+- [ ] T059 Create `apps/web/src/lib/apiClient.ts` (fetch wrapper: base URL from `VITE_API_BASE_URL`, JSON headers, error normalization matching `contracts/heroes-api.md`'s error shape)
+- [ ] T060 Create `apps/web/src/app/queryClient.ts` configuring a shared `QueryClient`; wrap `<App />` with `QueryClientProvider` in `apps/web/src/main.tsx`
+- [ ] T061 [P] Create `apps/web/src/features/heroes/types/hero.ts` (TS type mirroring the 10-field API representation)
+- [ ] T062 Create `apps/web/src/features/heroes/api/heroesApi.ts` with `listHeroes`, `getHero`, `createHero`, `updateHero`, `updateHeroStatus`, `deleteHero` functions built on `apiClient`
+- [ ] T063 [US1] Add `useHeroListQuery(page, search)` to `apps/web/src/features/heroes/api/heroesQueries.ts` with query key `['heroes','list',{page,search}]`
+- [ ] T064 [US1] Add `useHeroQuery(id)` to `apps/web/src/features/heroes/api/heroesQueries.ts` for hero-detail fetch
+- [ ] T065 [US2] Add `useCreateHeroMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating the heroes list query on success
+- [ ] T066 [US3] Add `useUpdateHeroMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating list + detail queries on success
+- [ ] T067 [US4] Add `useUpdateHeroStatusMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating list + detail queries on success
+- [ ] T068 [US5] Add `useDeleteHeroMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating the heroes list query on success
+
+**Checkpoint**: All server-state hooks exist and type-check against the backend contract, with no UI consuming them yet.
+
+---
+
+## Phase 12: Hero list, responsive grid, pagination, and search (US1 — MVP)
+
+**Goal**: A user can browse, page through, and search the hero directory read-only.
+
+**Independent Test**: Load the app against a seeded backend; page through results, search by partial name/nickname, and confirm ordering/empty/no-results states — no create/edit/delete required.
+
+- [ ] T069 [US1] Create `apps/web/src/features/heroes/hooks/useHeroListParams.ts` managing local `page`/`search` state (changing `search` resets `page` to 1)
+- [ ] T070 [US1] Create `apps/web/src/features/heroes/components/HeroCard.tsx` rendering one hero, with gray styling when `is_active` is `false` (FR-013)
+- [ ] T071 [US1] Create `apps/web/src/features/heroes/components/HeroList.tsx` rendering a responsive MUI `Grid` (5 columns on large desktop) of `HeroCard`s from `useHeroListQuery`
+- [ ] T072 [US1] Create `apps/web/src/features/heroes/components/HeroSearch.tsx` (MUI `TextField` + explicit submit action wired to `useHeroListParams`; no live-as-you-type filtering, per clarification)
+- [ ] T073 [US1] Create `apps/web/src/features/heroes/components/HeroPagination.tsx` (MUI `Pagination` wired to `useHeroListParams`, driven by the query response's pagination metadata)
+- [ ] T074 [US1] Create `apps/web/src/features/heroes/components/HeroListStates.tsx` (loading spinner, empty-list state, no-search-results state, API-error state — each visually distinct, per FR-020)
+- [ ] T075 [US1] Wire `HeroList` + `HeroSearch` + `HeroPagination` + `HeroListStates` together as the main screen in `apps/web/src/app/App.tsx`
+
+**Checkpoint**: US1 fully functional and independently demoable — this is the MVP slice.
+
+---
+
+## Phase 13: Hero details dialog (US1)
+
+- [ ] T076 [US1] Create `apps/web/src/features/heroes/components/HeroDetailsDialog.tsx` (MUI `Dialog` showing all 10 hero fields)
+- [ ] T077 [US1] Wire `HeroDetailsDialog` open/close local state into `HeroCard`/`HeroList` (clicking a card opens the dialog) in `apps/web/src/features/heroes/components/HeroList.tsx`
+
+**Checkpoint**: Clicking any hero card shows its full details; US1 acceptance scenario 5 satisfied.
+
+---
+
+## Phase 14: Hero creation flow (US2)
+
+**Goal**: A user can create a hero via a modal and see it appear at the top of the list.
+
+**Independent Test**: Open the create action, submit valid data, confirm the hero appears active and newest-first; submit invalid data and confirm values are preserved with a clear error.
+
+- [ ] T078 [US2] Create `apps/web/src/features/heroes/schemas/heroFormSchema.ts` (Zod schema for the 6 creatable/editable fields)
+- [ ] T079 [US2] Create `apps/web/src/features/heroes/components/HeroFormDialog.tsx` (shared create/edit MUI `Dialog` using React Hook Form + `zodResolver`; not dismissible while a submission is pending, per FR-015a)
+- [ ] T080 [US2] Wire create mode of `HeroFormDialog` to `useCreateHeroMutation`: loading state on submit, success/error feedback, entered values preserved on failure (FR-019)
+- [ ] T081 [US2] Add a "Create Hero" action to the main screen in `apps/web/src/app/App.tsx`, opening `HeroFormDialog` in create mode
+
+**Checkpoint**: US2 fully functional and independently demoable.
+
+---
+
+## Phase 15: Hero editing flow (US3)
+
+**Goal**: A user can edit an active hero's editable fields via the same modal, pre-filled.
+
+**Independent Test**: Open an active hero's Edit action, change a field, submit, and confirm the update is reflected; confirm no Edit action exists for inactive heroes.
+
+- [ ] T082 [US3] Wire edit mode of `HeroFormDialog` (pre-filled from the selected hero; non-editable fields shown read-only) to `useUpdateHeroMutation`, with loading/success/error feedback and value preservation on failure
+- [ ] T083 [US3] Create `apps/web/src/features/heroes/components/HeroActions.tsx` rendering an Edit action (opens `HeroFormDialog` in edit mode) only when the hero is active
+
+**Checkpoint**: US3 fully functional and independently demoable.
+
+---
+
+## Phase 16: Activation/deactivation toggle and confirmation (US4)
+
+**Goal**: A user can toggle a hero's active state with confirmation, from any hero card.
+
+**Independent Test**: Toggle an active hero off (with confirmation), see it turn gray with only the toggle available; toggle it back on (with confirmation) and see full actions return.
+
+- [ ] T084 [US4] Create `apps/web/src/features/heroes/components/StatusConfirmDialog.tsx` (MUI `Dialog` confirming activate/deactivate before persisting)
+- [ ] T085 [US4] Create `apps/web/src/features/heroes/components/HeroStatusToggle.tsx` (MUI `Switch` opening `StatusConfirmDialog`; on confirm, calls `useUpdateHeroStatusMutation`; disabled while a change is pending, per FR-015)
+- [ ] T086 [US4] Wire `HeroStatusToggle` into `HeroActions` for both active and inactive heroes in `apps/web/src/features/heroes/components/HeroActions.tsx`
+
+**Checkpoint**: US4 fully functional and independently demoable.
+
+---
+
+## Phase 17: Permanent deletion flow (US5)
+
+**Goal**: A user can permanently delete an active hero with confirmation.
+
+**Independent Test**: Trigger Delete on an active hero, confirm, and see it disappear from the list at every page/search result; confirm no Delete action exists for inactive heroes.
+
+- [ ] T087 [US5] Create `apps/web/src/features/heroes/components/DeleteConfirmDialog.tsx` (MUI `Dialog` confirming permanent deletion before persisting)
+- [ ] T088 [US5] Add a Delete action to `apps/web/src/features/heroes/components/HeroActions.tsx`, rendered only for active heroes, wired to `DeleteConfirmDialog` then `useDeleteHeroMutation`
+
+**Checkpoint**: US5 fully functional and independently demoable — all five user stories now complete.
+
+---
+
+## Phase 18: Loading, empty, error, and feedback states (cross-cutting polish)
+
+**Purpose**: Ensure FR-015/FR-017/FR-018 and the pagination clarification are satisfied uniformly across all flows, not just per-story.
+
+- [ ] T089 Add pending/disabled-button states to every mutation-triggering control (`HeroFormDialog`, `HeroStatusToggle`, `DeleteConfirmDialog`) to guarantee duplicate-submission prevention and visible loading feedback everywhere (FR-015, FR-017)
+- [ ] T090 Create `apps/web/src/components/ui/FeedbackSnackbar.tsx` (shared success/error feedback surface) and wire it into the create/edit/status/delete flows (FR-018)
+- [ ] T091 [US1] Implement the pagination auto-navigate-back-on-empty-page behavior in `apps/web/src/features/heroes/hooks/useHeroListParams.ts` (triggered after delete/deactivate mutations empty the current page)
+
+**Checkpoint**: SC-003 and SC-006 (feedback and list-freshness success criteria) hold across every operation.
+
+---
+
+## Phase 19: Frontend tests
+
+**Purpose**: Cover the critical interactions and UI states called out in plan.md's Testing section (Constitution Principle VIII).
+
+- [ ] T092 [P] [US1] Write `apps/web/src/features/heroes/components/HeroList.test.tsx` test: shows loading, then renders the fetched list
+- [ ] T093 [P] [US1] Write test in `HeroList.test.tsx`: shows the empty-list state when zero heroes are returned
+- [ ] T094 [P] [US1] Write test in `HeroList.test.tsx`: shows the API-error state when the list query fails
+- [ ] T095 [P] [US1] Write `apps/web/src/features/heroes/components/HeroSearch.test.tsx` test: submitting a search updates results, and a non-matching term shows the no-results state
+- [ ] T096 [P] [US1] Write `apps/web/src/features/heroes/components/HeroPagination.test.tsx` test: changing page requests the correct page
+- [ ] T097 [P] [US1] Write test: `HeroCard` renders inactive heroes with gray styling and without Edit/Delete actions
+- [ ] T098 [P] [US4] Write `apps/web/src/features/heroes/components/HeroStatusToggle.test.tsx` test: toggling requires confirmation before the mutation fires
+- [ ] T099 [P] [US5] Write `apps/web/src/features/heroes/components/DeleteConfirmDialog.test.tsx` test: deleting requires confirmation before the mutation fires
+- [ ] T100 [P] [US2] Write `apps/web/src/features/heroes/components/HeroFormDialog.test.tsx` test: invalid submission shows validation errors and preserves entered values
+- [ ] T101 [P] [US2] Write test in `HeroFormDialog.test.tsx`: successful create submission shows success feedback and closes the dialog
+- [ ] T102 [P] [US3] Write test in `HeroFormDialog.test.tsx`: failed edit submission shows error feedback and keeps entered values in the form
+
+**Checkpoint**: `npm run test --workspace apps/web` passes, covering every priority listed in plan.md's frontend testing section.
+
+---
+
+## Phase 20: Documentation and final quality checks
+
+**Purpose**: Leave the project reproducible and defensible for review (Constitution Principles XIII, XVI).
+
+- [ ] T103 Write root `README.md` sections: project architecture, folder structure, and architectural decisions (repository pattern, no Redux/Router, npm workspaces) referencing `plan.md`/`research.md`
+- [ ] T104 [P] Write `README.md` sections: prerequisites, environment setup, Docker database startup, running Prisma migrations
+- [ ] T105 [P] Write `README.md` sections: frontend startup, backend startup, running tests
+- [ ] T106 [P] Write `README.md` sections: API overview (summarizing `contracts/heroes-api.md`), relevant trade-offs, potential future improvements
+- [ ] T107 Run all `quickstart.md` validation scenarios (A–G) end-to-end against the running app and confirm each passes
+- [ ] T108 Run `tsc --noEmit` across `apps/api` and `apps/web` and resolve any strict-mode errors
+- [ ] T109 Run the full lint and test suite from the repo root (`npm run lint`, `npm run test`) and resolve any failures
+
+**Checkpoint**: Project is complete, documented, and passes all automated checks.
+
+---
+
+## Dependencies & Execution Order
+
+### Phase Dependencies (this feature is built as a layered stack, largely sequential)
+
+- **Phase 1 (Root config)**: No dependencies — start immediately
+- **Phase 2 (Docker/MySQL)**: Depends on Phase 1 (needs root `.env.example` conventions)
+- **Phase 3 (NestJS foundation)**: Depends on Phase 1; independent of Phase 2 until DB is actually needed
+- **Phase 4 (Prisma schema/migration)**: Depends on Phases 2 (running MySQL) and 3 (`apps/api` exists)
+- **Phase 5 (Repository)**: Depends on Phase 4
+- **Phase 6 (Service)**: Depends on Phase 5
+- **Phase 7 (Controllers/DTOs)**: Depends on Phase 6
+- **Phase 8 (Backend unit tests)**: Depends on Phase 6 (can start as soon as the service exists, in parallel with Phase 7)
+- **Phase 9 (Backend integration tests)**: Depends on Phase 7 (needs live endpoints)
+- **Phase 10 (Frontend foundation)**: Depends on Phase 1; independent of backend phases (can run in parallel with Phases 3–9)
+- **Phase 11 (API client/TanStack Query)**: Depends on Phase 10 and on Phase 7 (needs the real API contract to build against, though it can be stubbed earlier)
+- **Phase 12 (List/search/pagination — US1)**: Depends on Phase 11
+- **Phase 13 (Details dialog — US1)**: Depends on Phase 12
+- **Phase 14 (Create — US2)**: Depends on Phase 11 (can proceed in parallel with Phases 12–13)
+- **Phase 15 (Edit — US3)**: Depends on Phase 14 (reuses `HeroFormDialog`)
+- **Phase 16 (Activate/deactivate — US4)**: Depends on Phase 11; benefits from `HeroActions` existing (Phase 15) but can be built independently
+- **Phase 17 (Delete — US5)**: Depends on Phase 16 (`HeroActions` shared with the toggle)
+- **Phase 18 (Cross-cutting UX polish)**: Depends on Phases 14–17 all existing
+- **Phase 19 (Frontend tests)**: Depends on the components under test existing (Phases 12–18)
+- **Phase 20 (Docs/final checks)**: Depends on everything else
+
+### User Story Independence
+
+Despite the layered phase ordering, each of US1–US5's frontend slice (Phases 12–13, 14, 15, 16, 17
+respectively) is independently testable once Phase 11 is done — per-story acceptance scenarios in
+spec.md can each be verified without the others being implemented, using direct API calls (Postman/
+curl) to exercise backend-only stories ahead of their frontend UI.
+
+### Parallel Opportunities
+
+- All `[P]`-marked tasks within a phase touch different files and can run in parallel
+- Phase 10 (frontend foundation) can proceed in parallel with Phases 3–9 (backend) once Phase 1 is done
+- Phase 8 (unit tests) can proceed in parallel with Phase 7 (controllers) once Phase 6 (service) is done
+- Within Phases 8–9 and 19, all listed test tasks are `[P]` (independent test files/cases)
+- Phase 14 (Create) can proceed in parallel with Phases 12–13 (List/Details) once Phase 11 is done, since they touch different components until `HeroFormDialog` is reused by Phase 15
+
+---
+
+## Implementation Strategy
+
+### MVP First (US1 only)
+
+1. Complete Phases 1–9 (full backend, all endpoints and tests)
+2. Complete Phases 10–13 (frontend foundation through browse/search/details — US1)
+3. **STOP and VALIDATE**: run quickstart.md Scenarios A (partial) and B against the running app
+4. This is the smallest deployable, demoable increment (read-only hero directory)
+
+### Incremental Delivery
+
+1. Phases 1–11 → foundation ready (backend complete, frontend wired to the API)
+2. Phase 12–13 → US1 (browse/search) → validate independently → demo
+3. Phase 14 → US2 (create) → validate independently → demo
+4. Phase 15 → US3 (edit) → validate independently → demo
+5. Phase 16 → US4 (activate/deactivate) → validate independently → demo
+6. Phase 17 → US5 (delete) → validate independently → demo
+7. Phases 18–20 → polish, test coverage, documentation → final review
+
+### Commit Granularity
+
+Each task above is scoped to a single coherent Git commit. Prefer committing after each task (or
+each tightly-related `[P]` group) rather than batching an entire phase into one commit, so history
+remains reviewable and bisectable.
