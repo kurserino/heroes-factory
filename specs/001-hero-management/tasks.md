@@ -60,7 +60,7 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 - [X] T007 Initialize `apps/api` as a NestJS project: `apps/api/package.json`, `apps/api/tsconfig.json` (`strict: true`), `apps/api/nest-cli.json`
 - [X] T008 [P] Configure `apps/api/.eslintrc.js` and `apps/api/.prettierrc`
-- [X] T009 Create `apps/api/src/main.ts` bootstrapping the Nest app with a global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`)
+- [X] T009 Create `apps/api/src/main.ts` bootstrapping the Nest app with a global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`) — **amended during Phase 12 browser verification**: added `app.enableCors()`, which was missing and caused the frontend (a different origin, `localhost:5173`) to fail every request with a browser-level CORS error; not caught earlier because Phase 9's integration tests call the app in-process via Supertest, which bypasses CORS entirely
 - [X] T010 [P] Create `apps/api/src/common/filters/http-exception.filter.ts` translating unknown/Prisma errors into the consistent `{ statusCode, error, message }` shape from `contracts/heroes-api.md`, never leaking ORM/DB internals
 - [X] T011 Register the global exception filter in `apps/api/src/main.ts`
 - [X] T012 Create `apps/api/src/app.module.ts` importing `PrismaModule` — deliberately deviates from the original description: `HeroesModule` is NOT imported here since it does not exist yet (Hero API is out of scope for this phase); this avoids the forward-reference inconsistency flagged in `/speckit-analyze` finding O2. `HeroesModule` will be wired in during Phase 7 (T038).
@@ -168,11 +168,11 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Bootable SPA shell before any Hero-specific UI exists.
 
-- [ ] T054 Initialize `apps/web` as a Vite + React + TypeScript project: `apps/web/package.json`, `apps/web/tsconfig.json` (`strict: true`), `apps/web/vite.config.ts`, `apps/web/index.html`
-- [ ] T055 [P] Install Material UI and configure a `ThemeProvider` in `apps/web/src/app/App.tsx`
-- [ ] T056 [P] Create `apps/web/.env.example` with `VITE_API_BASE_URL`
-- [ ] T057 [P] Configure Vitest + React Testing Library in `apps/web/vite.config.ts` (test section) and `apps/web/vitest.setup.ts`
-- [ ] T058 Create `apps/web/src/main.tsx` rendering `<App />`
+- [X] T054 Initialize `apps/web` as a Vite + React + TypeScript project: `apps/web/package.json`, `apps/web/tsconfig.json` (`strict: true`), `apps/web/vite.config.ts`, `apps/web/index.html`
+- [X] T055 [P] Install Material UI and configure a `ThemeProvider` in `apps/web/src/app/App.tsx`
+- [X] T056 [P] Create `apps/web/.env.example` with `VITE_API_BASE_URL`
+- [X] T057 [P] Configure Vitest + React Testing Library in `apps/web/vite.config.ts` (test section) and `apps/web/vitest.setup.ts`
+- [X] T058 Create `apps/web/src/main.tsx` rendering `<App />`
 
 **Checkpoint**: `npm run dev --workspace apps/web` serves a blank themed page.
 
@@ -182,18 +182,18 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: All server state centralized in TanStack Query (no Redux), per plan.md.
 
-- [ ] T059 Create `apps/web/src/lib/apiClient.ts` (fetch wrapper: base URL from `VITE_API_BASE_URL`, JSON headers, error normalization matching `contracts/heroes-api.md`'s error shape)
-- [ ] T060 Create `apps/web/src/app/queryClient.ts` configuring a shared `QueryClient`; wrap `<App />` with `QueryClientProvider` in `apps/web/src/main.tsx`
-- [ ] T061 [P] Create `apps/web/src/features/heroes/types/hero.ts` (TS type mirroring the 10-field API representation)
-- [ ] T062 Create `apps/web/src/features/heroes/api/heroesApi.ts` with `listHeroes`, `getHero`, `createHero`, `updateHero`, `updateHeroStatus`, `deleteHero` functions built on `apiClient`
-- [ ] T063 [US1] Add `useHeroListQuery(page, search)` to `apps/web/src/features/heroes/api/heroesQueries.ts` with query key `['heroes','list',{page,search}]`
-- [ ] T064 [US1] Add `useHeroQuery(id)` to `apps/web/src/features/heroes/api/heroesQueries.ts` for hero-detail fetch
+- [X] T059 Create `apps/web/src/lib/apiClient.ts` (fetch wrapper: base URL from `VITE_API_BASE_URL`, JSON headers, error normalization matching `contracts/heroes-api.md`'s error shape)
+- [X] T060 Create `apps/web/src/app/queryClient.ts` configuring a shared `QueryClient`; wrap `<App />` with `QueryClientProvider` in `apps/web/src/main.tsx`
+- [X] T061 [P] Create `apps/web/src/features/heroes/types/hero.ts` (TS type mirroring the 10-field API representation)
+- [X] T062 Create `apps/web/src/features/heroes/api/heroesApi.ts` with `listHeroes`, `getHero` functions built on `apiClient` — deliberately deviates from the original description: `createHero`/`updateHero`/`updateHeroStatus`/`deleteHero` are NOT added yet, per this phase's explicit exclusion of create/edit/status/delete; they land with their respective Phase 14–17 tasks.
+- [X] T063 [US1] Add `useHeroListQuery(page, search)` to `apps/web/src/features/heroes/api/heroesQueries.ts` with query key `['heroes','list',{page,search}]`
+- [X] T064 [US1] Add `useHeroQuery(id)` to `apps/web/src/features/heroes/api/heroesQueries.ts` for hero-detail fetch (defined now for completeness; not yet consumed by any component — `HeroDetailsDialog` receives its hero as a prop instead)
 - [ ] T065 [US2] Add `useCreateHeroMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating the heroes list query on success
 - [ ] T066 [US3] Add `useUpdateHeroMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating list + detail queries on success
 - [ ] T067 [US4] Add `useUpdateHeroStatusMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating list + detail queries on success
 - [ ] T068 [US5] Add `useDeleteHeroMutation()` to `apps/web/src/features/heroes/api/heroesQueries.ts`, invalidating the heroes list query on success
 
-**Checkpoint**: All server-state hooks exist and type-check against the backend contract, with no UI consuming them yet.
+**Checkpoint**: All server-state hooks exist and type-check against the backend contract, with no UI consuming them yet. **Note**: only the read-side hooks (T063, T064) were implemented this phase, per explicit scope exclusion; T065–T068 remain for Phases 14–17.
 
 ---
 
@@ -203,24 +203,24 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Independent Test**: Load the app against a seeded backend; page through results, search by partial name/nickname, and confirm ordering/empty/no-results states — no create/edit/delete required.
 
-- [ ] T069 [US1] Create `apps/web/src/features/heroes/hooks/useHeroListParams.ts` managing local `page`/`search` state (changing `search` resets `page` to 1)
-- [ ] T070 [US1] Create `apps/web/src/features/heroes/components/HeroCard.tsx` rendering one hero, with gray styling when `is_active` is `false` (FR-013)
-- [ ] T071 [US1] Create `apps/web/src/features/heroes/components/HeroList.tsx` rendering a responsive MUI `Grid` (5 columns on large desktop) of `HeroCard`s from `useHeroListQuery`
-- [ ] T072 [US1] Create `apps/web/src/features/heroes/components/HeroSearch.tsx` (MUI `TextField` + explicit submit action wired to `useHeroListParams`; no live-as-you-type filtering, per clarification)
-- [ ] T073 [US1] Create `apps/web/src/features/heroes/components/HeroPagination.tsx` (MUI `Pagination` wired to `useHeroListParams`, driven by the query response's pagination metadata)
-- [ ] T074 [US1] Create `apps/web/src/features/heroes/components/HeroListStates.tsx` (loading spinner, empty-list state, no-search-results state, API-error state — each visually distinct, per FR-020)
-- [ ] T075 [US1] Wire `HeroList` + `HeroSearch` + `HeroPagination` + `HeroListStates` together as the main screen in `apps/web/src/app/App.tsx`
+- [X] T069 [US1] Create `apps/web/src/features/heroes/hooks/useHeroListParams.ts` managing local `page`/`search` state (changing `search` resets `page` to 1)
+- [X] T070 [US1] Create `apps/web/src/features/heroes/components/HeroCard.tsx` rendering one hero, with gray styling when `is_active` is `false` (FR-013)
+- [X] T071 [US1] Create `apps/web/src/features/heroes/components/HeroList.tsx` rendering a responsive grid (5 columns on large desktop, via CSS Grid `sx` breakpoints rather than MUI's 12-column `Grid` — 12/5 is not an integer span) of `HeroCard`s from `useHeroListQuery`
+- [X] T072 [US1] Create `apps/web/src/features/heroes/components/HeroSearch.tsx` (MUI `TextField` + explicit submit action wired to `useHeroListParams`; no live-as-you-type filtering, per clarification)
+- [X] T073 [US1] Create `apps/web/src/features/heroes/components/HeroPagination.tsx` (MUI `Pagination` wired to `useHeroListParams`, driven by the query response's pagination metadata)
+- [X] T074 [US1] Create `apps/web/src/features/heroes/components/HeroListStates.tsx` (loading spinner, empty-list state, no-search-results state, API-error state — each visually distinct, per FR-020)
+- [X] T075 [US1] Wire `HeroList` + `HeroSearch` + `HeroPagination` + `HeroListStates` together as the main screen in `apps/web/src/app/App.tsx`
 
-**Checkpoint**: US1 fully functional and independently demoable — this is the MVP slice.
+**Checkpoint**: US1 fully functional and independently demoable — this is the MVP slice. **Verified**: manually exercised in a real browser against the live API (list render, detail dialog, no-results search) — see completion report for the bug found and fixed (missing CORS) during this verification.
 
 ---
 
 ## Phase 13: Hero details dialog (US1)
 
-- [ ] T076 [US1] Create `apps/web/src/features/heroes/components/HeroDetailsDialog.tsx` (MUI `Dialog` showing all 10 hero fields)
-- [ ] T077 [US1] Wire `HeroDetailsDialog` open/close local state into `HeroCard`/`HeroList` (clicking a card opens the dialog) in `apps/web/src/features/heroes/components/HeroList.tsx`
+- [X] T076 [US1] Create `apps/web/src/features/heroes/components/HeroDetailsDialog.tsx` (MUI `Dialog` showing all 10 hero fields)
+- [X] T077 [US1] Wire `HeroDetailsDialog` open/close local state into `HeroCard`/`HeroList` (clicking a card opens the dialog) in `apps/web/src/features/heroes/components/HeroList.tsx`
 
-**Checkpoint**: Clicking any hero card shows its full details; US1 acceptance scenario 5 satisfied.
+**Checkpoint**: Clicking any hero card shows its full details; US1 acceptance scenario 5 satisfied. **Verified** manually in-browser.
 
 ---
 
@@ -295,12 +295,12 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Cover the critical interactions and UI states called out in plan.md's Testing section (Constitution Principle VIII).
 
-- [ ] T092 [P] [US1] Write `apps/web/src/features/heroes/components/HeroList.test.tsx` test: shows loading, then renders the fetched list
-- [ ] T093 [P] [US1] Write test in `HeroList.test.tsx`: shows the empty-list state when zero heroes are returned
-- [ ] T094 [P] [US1] Write test in `HeroList.test.tsx`: shows the API-error state when the list query fails
-- [ ] T095 [P] [US1] Write `apps/web/src/features/heroes/components/HeroSearch.test.tsx` test: submitting a search updates results, and a non-matching term shows the no-results state
-- [ ] T096 [P] [US1] Write `apps/web/src/features/heroes/components/HeroPagination.test.tsx` test: changing page requests the correct page
-- [ ] T097 [P] [US1] Write test: `HeroCard` renders inactive heroes with gray styling and without Edit/Delete actions
+- [X] T092 [P] [US1] Write `apps/web/src/features/heroes/components/HeroList.test.tsx` test: shows loading, then renders the fetched list — **pulled forward and completed during Phase 12/13's implementation** (this and the four items below), since they directly test the read-only slice built in that phase; re-verified passing here
+- [X] T093 [P] [US1] Write test in `HeroList.test.tsx`: shows the empty-list state when zero heroes are returned
+- [X] T094 [P] [US1] Write test in `HeroList.test.tsx`: shows the API-error state when the list query fails
+- [X] T095 [P] [US1] Write test covering: submitting a search updates results, and a non-matching term shows the no-results state — split across `HeroSearch.test.tsx` (submit-triggering behavior) and `HeroList.test.tsx` (the resulting no-results UI + correct query args)
+- [X] T096 [P] [US1] Write `apps/web/src/features/heroes/components/HeroPagination.test.tsx` test: changing page requests the correct page
+- [X] T097 [P] [US1] Write test: `HeroCard` renders inactive heroes with gray/inactive presentation — the "without Edit/Delete actions" half is deferred: those actions don't exist in the UI at all yet (they're introduced in Phases 15/17), so there is nothing to assert their absence against until then
 - [ ] T098 [P] [US4] Write `apps/web/src/features/heroes/components/HeroStatusToggle.test.tsx` test: toggling requires confirmation before the mutation fires
 - [ ] T099 [P] [US5] Write `apps/web/src/features/heroes/components/DeleteConfirmDialog.test.tsx` test: deleting requires confirmation before the mutation fires
 - [ ] T100 [P] [US2] Write `apps/web/src/features/heroes/components/HeroFormDialog.test.tsx` test: invalid submission shows validation errors and preserves entered values
