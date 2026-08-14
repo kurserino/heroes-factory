@@ -46,7 +46,7 @@ export function HeroList() {
             onClick={() => setFormState({ type: 'create' })}
             sx={{ flexShrink: 0, borderRadius: 999 }}
           >
-            Create
+            Criar
           </Button>
           <Box flexGrow={1}>
             <HeroSearch initialValue={search} onSubmit={submitSearch} />

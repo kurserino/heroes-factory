@@ -25,19 +25,19 @@ export function DeleteConfirmDialog({
 
   return (
     <Dialog open={hero !== null} onClose={isPending ? undefined : onCancel}>
-      <DialogTitle>Permanently delete hero?</DialogTitle>
+      <DialogTitle>Excluir herói permanentemente?</DialogTitle>
       <DialogContent>
         {displayHero && (
-          <>This will permanently delete {displayHero.name}. This action cannot be undone.</>
+          <>Isso vai excluir permanentemente {displayHero.name}. Essa ação não pode ser desfeita.</>
         )}
       </DialogContent>
       <Divider />
       <DialogActions sx={{ justifyContent: 'center', px: 4, py: 3 }}>
         <Button variant="outlined" onClick={onCancel} disabled={isPending}>
-          Cancel
+          Cancelar
         </Button>
         <Button onClick={onConfirm} disabled={isPending} color="error" variant="contained">
-          Delete
+          Excluir
         </Button>
       </DialogActions>
     </Dialog>

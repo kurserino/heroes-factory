@@ -52,11 +52,11 @@ export function HeroActions({ hero, onEdit, onSuccess, onError }: HeroActionsPro
   function confirmDelete(): void {
     deleteMutation.mutate(hero.id, {
       onSuccess: () => {
-        onSuccess('Hero deleted.');
+        onSuccess('Herói excluído.');
         setConfirmingDelete(false);
       },
       onError: (error: unknown) => {
-        const message = error instanceof ApiError ? error.message : 'Something went wrong.';
+        const message = error instanceof ApiError ? error.message : 'Algo deu errado.';
         onError(message);
         setConfirmingDelete(false);
       },
@@ -68,7 +68,7 @@ export function HeroActions({ hero, onEdit, onSuccess, onError }: HeroActionsPro
       sx={{ position: 'absolute', top: 4, right: 4 }}
       onClick={(event) => event.stopPropagation()}
     >
-      <IconButton aria-label={`More actions for ${hero.name}`} onClick={openMenu} size="small">
+      <IconButton aria-label={`Mais ações de ${hero.name}`} onClick={openMenu} size="small">
         <MoreVertIcon fontSize="small" />
       </IconButton>
       {/* keepMounted: closing the menu must not unmount HeroStatusToggle,
@@ -78,7 +78,7 @@ export function HeroActions({ hero, onEdit, onSuccess, onError }: HeroActionsPro
         {hero.is_active && (
           <MenuItem
             onClick={selectEdit}
-            aria-label={`Edit ${hero.name}`}
+            aria-label={`Editar ${hero.name}`}
             sx={{ justifyContent: 'center' }}
           >
             <EditIcon color="primary" />
@@ -87,7 +87,7 @@ export function HeroActions({ hero, onEdit, onSuccess, onError }: HeroActionsPro
         {hero.is_active && (
           <MenuItem
             onClick={selectDelete}
-            aria-label={`Delete ${hero.name}`}
+            aria-label={`Excluir ${hero.name}`}
             sx={{ justifyContent: 'center' }}
           >
             <DeleteIcon color="error" />

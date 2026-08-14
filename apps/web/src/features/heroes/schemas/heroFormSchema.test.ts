@@ -28,7 +28,7 @@ describe('heroFormSchema', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('Date of birth cannot be in the future');
+      expect(result.error.issues[0].message).toBe('Data de nascimento não pode ser no futuro');
     }
   });
 
@@ -37,7 +37,7 @@ describe('heroFormSchema', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('Nickname is required');
+      expect(result.error.issues[0].message).toBe('Nome de guerra é obrigatório');
     }
   });
 
@@ -46,7 +46,7 @@ describe('heroFormSchema', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('Must be a valid URL');
+      expect(result.error.issues[0].message).toBe('Deve ser uma URL válida');
     }
   });
 

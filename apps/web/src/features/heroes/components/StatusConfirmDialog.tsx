@@ -17,21 +17,21 @@ export function StatusConfirmDialog({
   onConfirm,
   onCancel,
 }: StatusConfirmDialogProps) {
-  const action = targetActive ? 'reactivate' : 'deactivate';
+  const action = targetActive ? 'reativar' : 'desativar';
 
   return (
     <Dialog open={open} onClose={isPending ? undefined : onCancel}>
-      <DialogTitle>{targetActive ? 'Reactivate hero?' : 'Deactivate hero?'}</DialogTitle>
+      <DialogTitle>{targetActive ? 'Reativar herói?' : 'Desativar herói?'}</DialogTitle>
       <DialogContent>
-        Are you sure you want to {action} {heroName}?
+        Tem certeza que deseja {action} {heroName}?
       </DialogContent>
       <Divider />
       <DialogActions sx={{ justifyContent: 'center', px: 4, py: 3 }}>
         <Button variant="outlined" onClick={onCancel} disabled={isPending}>
-          Cancel
+          Cancelar
         </Button>
         <Button onClick={onConfirm} disabled={isPending} variant="contained">
-          {targetActive ? 'Reactivate' : 'Deactivate'}
+          {targetActive ? 'Reativar' : 'Desativar'}
         </Button>
       </DialogActions>
     </Dialog>

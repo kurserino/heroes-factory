@@ -22,7 +22,7 @@ export function HeroSearch({ initialValue, onSubmit }: HeroSearchProps) {
   return (
     <Stack component="form" direction="row" spacing={1} onSubmit={handleSubmit} role="search">
       <TextField
-        placeholder="Search by name or nickname"
+        placeholder="Digite o nome do herói"
         value={value}
         onChange={(event) => setValue(event.target.value)}
         size="small"
@@ -35,14 +35,14 @@ export function HeroSearch({ initialValue, onSubmit }: HeroSearchProps) {
             </InputAdornment>
           ),
         }}
-        inputProps={{ 'aria-label': 'Search heroes' }}
+        inputProps={{ 'aria-label': 'Buscar heróis' }}
       />
       <Button
         type="submit"
         variant="outlined"
         sx={{ bgcolor: 'background.paper', borderRadius: 999 }}
       >
-        Search
+        Buscar
       </Button>
     </Stack>
   );

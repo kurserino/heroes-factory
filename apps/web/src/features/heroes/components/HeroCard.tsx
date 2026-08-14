@@ -31,7 +31,7 @@ export function HeroCard({
       data-testid="hero-card"
       data-active={hero.is_active}
     >
-      <CardActionArea onClick={() => onSelect(hero)} aria-label={`View details for ${hero.name}`}>
+      <CardActionArea onClick={() => onSelect(hero)} aria-label={`Ver detalhes de ${hero.name}`}>
         <CardContent
           sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}
         >

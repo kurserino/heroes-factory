@@ -6,19 +6,19 @@ import { z } from 'zod';
 // particular cannot replicate the avatar-URL "resolves to a loadable image"
 // check, which only the server verifies.
 export const heroFormSchema = z.object({
-  name: z.string().trim().min(1, 'Name is required').max(120),
-  nickname: z.string().trim().min(1, 'Nickname is required').max(120),
+  name: z.string().trim().min(1, 'Nome completo é obrigatório').max(120),
+  nickname: z.string().trim().min(1, 'Nome de guerra é obrigatório').max(120),
   date_of_birth: z
     .string()
-    .min(1, 'Date of birth is required')
-    .refine((value) => !Number.isNaN(new Date(value).getTime()), 'Invalid date')
+    .min(1, 'Data de nascimento é obrigatória')
+    .refine((value) => !Number.isNaN(new Date(value).getTime()), 'Data inválida')
     .refine(
       (value) => new Date(value).getTime() <= Date.now(),
-      'Date of birth cannot be in the future',
+      'Data de nascimento não pode ser no futuro',
     ),
-  universe: z.string().trim().min(1, 'Universe is required').max(120),
-  main_power: z.string().trim().min(1, 'Main power is required').max(200),
-  avatar_url: z.string().trim().min(1, 'Avatar URL is required').url('Must be a valid URL'),
+  universe: z.string().trim().min(1, 'Universo é obrigatório').max(120),
+  main_power: z.string().trim().min(1, 'Habilidade é obrigatória').max(200),
+  avatar_url: z.string().trim().min(1, 'Avatar é obrigatório').url('Deve ser uma URL válida'),
 });
 
 export type HeroFormValues = z.infer<typeof heroFormSchema>;

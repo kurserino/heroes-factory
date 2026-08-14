@@ -44,12 +44,12 @@ describe('HeroCard', () => {
     expect(screen.getByText('Spider-Man')).toBeInTheDocument();
     expect(screen.getByTestId('hero-card')).toHaveAttribute('data-active', 'true');
 
-    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Mais ações de Peter Parker' }));
 
-    expect(screen.getByRole('menuitem', { name: 'Edit Peter Parker' })).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: 'Delete Peter Parker' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Editar Peter Parker' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Excluir Peter Parker' })).toBeInTheDocument();
     expect(
-      screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }),
+      screen.getByRole('switch', { name: 'Alternar status ativo de Peter Parker' }),
     ).toBeChecked();
   });
 
@@ -59,12 +59,14 @@ describe('HeroCard', () => {
 
     expect(screen.getByTestId('hero-card')).toHaveAttribute('data-active', 'false');
 
-    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Mais ações de Peter Parker' }));
 
-    expect(screen.queryByRole('menuitem', { name: 'Edit Peter Parker' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('menuitem', { name: 'Delete Peter Parker' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Editar Peter Parker' })).not.toBeInTheDocument();
     expect(
-      screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }),
+      screen.queryByRole('menuitem', { name: 'Excluir Peter Parker' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('switch', { name: 'Alternar status ativo de Peter Parker' }),
     ).not.toBeChecked();
   });
 });

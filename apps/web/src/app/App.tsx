@@ -79,7 +79,7 @@ export function App() {
           sx={{ py: 4, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
         >
           <Typography variant="h4" component="h1" color="primary" align="center" gutterBottom>
-            Heroes
+            Heróis
           </Typography>
           <HeroList />
         </Container>

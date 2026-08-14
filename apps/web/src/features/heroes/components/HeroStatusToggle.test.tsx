@@ -50,13 +50,13 @@ describe('HeroStatusToggle', () => {
       />,
     );
 
-    await user.click(screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }));
+    await user.click(screen.getByRole('switch', { name: 'Alternar status ativo de Peter Parker' }));
 
     // Mutation must not fire just from selecting the menu item.
     expect(updateHeroStatus).not.toHaveBeenCalled();
-    expect(screen.getByText('Deactivate hero?')).toBeInTheDocument();
+    expect(screen.getByText('Desativar herói?')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Deactivate' }));
+    await user.click(screen.getByRole('button', { name: 'Desativar' }));
 
     await waitFor(() => expect(updateHeroStatus).toHaveBeenCalledWith('1', false));
   });
@@ -73,8 +73,8 @@ describe('HeroStatusToggle', () => {
       />,
     );
 
-    await user.click(screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }));
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await user.click(screen.getByRole('switch', { name: 'Alternar status ativo de Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }));
 
     expect(updateHeroStatus).not.toHaveBeenCalled();
   });

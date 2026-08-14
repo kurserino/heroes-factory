@@ -45,11 +45,11 @@ export const HeroStatusToggle = forwardRef<HTMLLIElement, HeroStatusToggleProps>
         { id: hero.id, isActive: pendingTarget },
         {
           onSuccess: () => {
-            onSuccess(pendingTarget ? 'Hero reactivated.' : 'Hero deactivated.');
+            onSuccess(pendingTarget ? 'Herói reativado.' : 'Herói desativado.');
             setPendingTarget(null);
           },
           onError: (error: unknown) => {
-            const message = error instanceof ApiError ? error.message : 'Something went wrong.';
+            const message = error instanceof ApiError ? error.message : 'Algo deu errado.';
             onError(message);
             setPendingTarget(null);
           },
@@ -67,7 +67,7 @@ export const HeroStatusToggle = forwardRef<HTMLLIElement, HeroStatusToggleProps>
             disabled={mutation.isPending}
             inputProps={{
               role: 'switch',
-              'aria-label': `Toggle active state for ${hero.name}`,
+              'aria-label': `Alternar status ativo de ${hero.name}`,
             }}
           />
         </MenuItem>

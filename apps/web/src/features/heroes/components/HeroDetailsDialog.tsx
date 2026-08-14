@@ -50,7 +50,7 @@ export function HeroDetailsDialog({ hero, onClose }: HeroDetailsDialogProps) {
             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
           >
             {hero.nickname}
-            <IconButton aria-label="Close" onClick={onClose} size="small">
+            <IconButton aria-label="Fechar" onClick={onClose} size="small">
               <CloseIcon />
             </IconButton>
           </DialogTitle>
@@ -61,19 +61,19 @@ export function HeroDetailsDialog({ hero, onClose }: HeroDetailsDialogProps) {
                 <Avatar src={hero.avatar_url} alt={hero.name} sx={{ width: 96, height: 96 }} />
               </Box>
               <Stack direction="row" spacing={2}>
-                <Field label="Full name" value={hero.name} />
-                <Field label="Date of birth" value={formatDateOfBirth(hero.date_of_birth)} />
+                <Field label="Nome completo:" value={hero.name} />
+                <Field label="Data de nascimento" value={formatDateOfBirth(hero.date_of_birth)} />
               </Stack>
               <Stack direction="row" spacing={2}>
-                <Field label="Universe" value={hero.universe} />
-                <Field label="Main power" value={hero.main_power} />
+                <Field label="Universo" value={hero.universe} />
+                <Field label="Habilidade" value={hero.main_power} />
               </Stack>
             </Stack>
           </DialogContent>
           <Divider />
           <DialogActions sx={{ justifyContent: 'center', px: 4, py: 3 }}>
             <Button variant="outlined" onClick={onClose}>
-              Close
+              Fechar
             </Button>
           </DialogActions>
         </>

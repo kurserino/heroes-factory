@@ -42,12 +42,12 @@ function makeHero(overrides: Partial<Hero> = {}): Hero {
 }
 
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText('Name'), 'Bruce Wayne');
-  await user.type(screen.getByLabelText('Nickname'), 'Batman');
-  await user.type(screen.getByLabelText('Date of birth'), '01011970');
-  await user.type(screen.getByLabelText('Universe'), 'DC');
-  await user.type(screen.getByLabelText('Main power'), 'Genius detective');
-  await user.type(screen.getByLabelText('Avatar URL'), 'https://example.com/batman.png');
+  await user.type(screen.getByLabelText('Nome completo'), 'Bruce Wayne');
+  await user.type(screen.getByLabelText('Nome de guerra'), 'Batman');
+  await user.type(screen.getByLabelText('Data de nascimento'), '01011970');
+  await user.type(screen.getByLabelText('Universo'), 'DC');
+  await user.type(screen.getByLabelText('Habilidade'), 'Genius detective');
+  await user.type(screen.getByLabelText('Avatar'), 'https://example.com/batman.png');
 }
 
 describe('HeroFormDialog', () => {
@@ -59,13 +59,13 @@ describe('HeroFormDialog', () => {
       <HeroFormDialog state={state} onClose={vi.fn()} onSuccess={vi.fn()} onError={vi.fn()} />,
     );
 
-    await user.type(screen.getByLabelText('Name'), 'Bruce Wayne');
+    await user.type(screen.getByLabelText('Nome completo'), 'Bruce Wayne');
     // Leave other required fields empty and submit.
-    await user.click(screen.getByRole('button', { name: 'Create hero' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
 
-    expect(await screen.findByText('Nickname is required')).toBeInTheDocument();
+    expect(await screen.findByText('Nome de guerra é obrigatório')).toBeInTheDocument();
     expect(createHero).not.toHaveBeenCalled();
-    expect(screen.getByLabelText('Name')).toHaveValue('Bruce Wayne');
+    expect(screen.getByLabelText('Nome completo')).toHaveValue('Bruce Wayne');
   });
 
   it('shows success feedback and closes the dialog on a successful create submission', async () => {
@@ -84,17 +84,17 @@ describe('HeroFormDialog', () => {
     );
 
     await fillForm(user);
-    await user.click(screen.getByRole('button', { name: 'Create hero' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
 
     await waitFor(() => expect(createHero).toHaveBeenCalled());
-    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith('Hero created.'));
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith('Herói criado.'));
     expect(onClose).toHaveBeenCalled();
   });
 
   it('shows error feedback and keeps entered values when a create submission fails', async () => {
     const user = userEvent.setup();
     vi.mocked(createHero).mockRejectedValue(
-      new ApiError(400, 'Bad Request', 'avatar_url must resolve to a loadable image'),
+      new ApiError(400, 'Bad Request', 'A URL do avatar precisa apontar para uma imagem válida'),
     );
     const onError = vi.fn();
     const onClose = vi.fn();
@@ -109,21 +109,23 @@ describe('HeroFormDialog', () => {
     );
 
     await fillForm(user);
-    await user.click(screen.getByRole('button', { name: 'Create hero' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
 
     await waitFor(() =>
-      expect(onError).toHaveBeenCalledWith('avatar_url must resolve to a loadable image'),
+      expect(onError).toHaveBeenCalledWith(
+        'A URL do avatar precisa apontar para uma imagem válida',
+      ),
     );
     expect(onClose).not.toHaveBeenCalled();
-    expect(screen.getByLabelText('Name')).toHaveValue('Bruce Wayne');
-    expect(screen.getByLabelText('Avatar URL')).toHaveValue('https://example.com/batman.png');
+    expect(screen.getByLabelText('Nome completo')).toHaveValue('Bruce Wayne');
+    expect(screen.getByLabelText('Avatar')).toHaveValue('https://example.com/batman.png');
   });
 
   it('shows error feedback and keeps entered values when an edit submission fails', async () => {
     const user = userEvent.setup();
     const hero = makeHero();
     vi.mocked(updateHero).mockRejectedValue(
-      new ApiError(409, 'Conflict', 'Cannot edit an inactive hero'),
+      new ApiError(409, 'Conflict', 'Não é possível editar um herói inativo'),
     );
     const onError = vi.fn();
     const onClose = vi.fn();
@@ -137,15 +139,17 @@ describe('HeroFormDialog', () => {
       />,
     );
 
-    const mainPowerField = await screen.findByLabelText('Main power');
+    const mainPowerField = await screen.findByLabelText('Habilidade');
     expect(mainPowerField).toHaveValue(hero.main_power);
 
     await user.clear(mainPowerField);
     await user.type(mainPowerField, 'Updated power');
-    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
 
-    await waitFor(() => expect(onError).toHaveBeenCalledWith('Cannot edit an inactive hero'));
+    await waitFor(() =>
+      expect(onError).toHaveBeenCalledWith('Não é possível editar um herói inativo'),
+    );
     expect(onClose).not.toHaveBeenCalled();
-    expect(screen.getByLabelText('Main power')).toHaveValue('Updated power');
+    expect(screen.getByLabelText('Habilidade')).toHaveValue('Updated power');
   });
 });

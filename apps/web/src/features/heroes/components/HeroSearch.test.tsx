@@ -9,8 +9,8 @@ describe('HeroSearch', () => {
     const onSubmit = vi.fn();
     render(<HeroSearch initialValue="" onSubmit={onSubmit} />);
 
-    await user.type(screen.getByLabelText('Search heroes'), '  spider  ');
-    await user.click(screen.getByRole('button', { name: 'Search' }));
+    await user.type(screen.getByLabelText('Buscar heróis'), '  spider  ');
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
 
     expect(onSubmit).toHaveBeenCalledWith('spider');
   });
@@ -20,7 +20,7 @@ describe('HeroSearch', () => {
     const onSubmit = vi.fn();
     render(<HeroSearch initialValue="" onSubmit={onSubmit} />);
 
-    await user.type(screen.getByLabelText('Search heroes'), 'spider');
+    await user.type(screen.getByLabelText('Buscar heróis'), 'spider');
 
     expect(onSubmit).not.toHaveBeenCalled();
   });

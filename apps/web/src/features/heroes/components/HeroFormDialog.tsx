@@ -121,11 +121,11 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
 
     mutation
       .then(() => {
-        onSuccess(state.type === 'create' ? 'Hero created.' : 'Hero updated.');
+        onSuccess(state.type === 'create' ? 'Herói criado.' : 'Herói atualizado.');
         onClose();
       })
       .catch((error: unknown) => {
-        const message = error instanceof ApiError ? error.message : 'Something went wrong.';
+        const message = error instanceof ApiError ? error.message : 'Algo deu errado.';
         onError(message);
       });
   });
@@ -133,8 +133,8 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
   return (
     <Dialog open={state !== null} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {isEdit ? 'Edit Hero' : 'Create Hero'}
-        <IconButton aria-label="Close" onClick={handleClose} disabled={isPending} size="small">
+        {isEdit ? 'Editar herói' : 'Criar herói'}
+        <IconButton aria-label="Fechar" onClick={handleClose} disabled={isPending} size="small">
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
@@ -149,8 +149,8 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
                 <LabeledTextField
                   {...field}
                   id="hero-name"
-                  fieldLabel="Name"
-                  placeholder="Enter the full name"
+                  fieldLabel="Nome completo"
+                  placeholder="Digite o nome completo"
                   error={!!errors.name}
                   helperText={errors.name?.message}
                   disabled={isPending}
@@ -165,8 +165,8 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
                 <LabeledTextField
                   {...field}
                   id="hero-nickname"
-                  fieldLabel="Nickname"
-                  placeholder="Enter the nickname"
+                  fieldLabel="Nome de guerra"
+                  placeholder="Digite o nome de guerra"
                   error={!!errors.nickname}
                   helperText={errors.nickname?.message}
                   disabled={isPending}
@@ -193,8 +193,8 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
                       slotProps={{
                         textField: {
                           id: 'hero-date-of-birth',
-                          fieldLabel: 'Date of birth',
-                          placeholder: 'Enter the date',
+                          fieldLabel: 'Data de nascimento',
+                          placeholder: 'Digite a data',
                           error: !!errors.date_of_birth,
                           helperText: errors.date_of_birth?.message,
                           fullWidth: true,
@@ -215,8 +215,8 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
                     <LabeledTextField
                       {...field}
                       id="hero-universe"
-                      fieldLabel="Universe"
-                      placeholder="Enter the universe"
+                      fieldLabel="Universo"
+                      placeholder="Digite o universo"
                       error={!!errors.universe}
                       helperText={errors.universe?.message}
                       disabled={isPending}
@@ -235,8 +235,8 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
                     <LabeledTextField
                       {...field}
                       id="hero-main-power"
-                      fieldLabel="Main power"
-                      placeholder="Enter the main power"
+                      fieldLabel="Habilidade"
+                      placeholder="Digite a habilidade"
                       error={!!errors.main_power}
                       helperText={errors.main_power?.message}
                       disabled={isPending}
@@ -253,8 +253,8 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
                     <LabeledTextField
                       {...field}
                       id="hero-avatar-url"
-                      fieldLabel="Avatar URL"
-                      placeholder="Enter the URL"
+                      fieldLabel="Avatar"
+                      placeholder="Digite a URL"
                       error={!!errors.avatar_url}
                       helperText={errors.avatar_url?.message}
                       disabled={isPending}
@@ -269,10 +269,10 @@ export function HeroFormDialog({ state, onClose, onSuccess, onError }: HeroFormD
         <Divider />
         <DialogActions sx={{ justifyContent: 'center', px: 4, py: 3 }}>
           <Button variant="outlined" onClick={handleClose} disabled={isPending}>
-            Cancel
+            Cancelar
           </Button>
           <Button type="submit" variant="contained" disabled={isPending}>
-            {isEdit ? 'Save changes' : 'Create hero'}
+            Salvar
           </Button>
         </DialogActions>
       </form>

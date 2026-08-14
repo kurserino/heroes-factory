@@ -47,28 +47,30 @@ describe('HeroActions "More actions" menu', () => {
     const user = userEvent.setup();
     renderWithClient(<HeroActions {...baseProps(makeHero({ is_active: true }))} />);
 
-    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Mais ações de Peter Parker' }));
 
-    expect(screen.getByRole('menuitem', { name: 'Edit Peter Parker' })).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: 'Delete Peter Parker' })).toBeInTheDocument();
-    const toggle = screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' });
+    expect(screen.getByRole('menuitem', { name: 'Editar Peter Parker' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Excluir Peter Parker' })).toBeInTheDocument();
+    const toggle = screen.getByRole('switch', { name: 'Alternar status ativo de Peter Parker' });
     expect(toggle).toBeChecked();
 
-    expect(screen.queryByText('Edit')).not.toBeInTheDocument();
-    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
-    expect(screen.queryByText('Deactivate')).not.toBeInTheDocument();
-    expect(screen.queryByText('Reactivate')).not.toBeInTheDocument();
+    expect(screen.queryByText('Editar')).not.toBeInTheDocument();
+    expect(screen.queryByText('Excluir')).not.toBeInTheDocument();
+    expect(screen.queryByText('Desativar')).not.toBeInTheDocument();
+    expect(screen.queryByText('Reativar')).not.toBeInTheDocument();
   });
 
   it('shows only an unchecked switch for an inactive hero', async () => {
     const user = userEvent.setup();
     renderWithClient(<HeroActions {...baseProps(makeHero({ is_active: false }))} />);
 
-    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Mais ações de Peter Parker' }));
 
-    expect(screen.queryByRole('menuitem', { name: 'Edit Peter Parker' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('menuitem', { name: 'Delete Peter Parker' })).not.toBeInTheDocument();
-    const toggle = screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' });
+    expect(screen.queryByRole('menuitem', { name: 'Editar Peter Parker' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Excluir Peter Parker' }),
+    ).not.toBeInTheDocument();
+    const toggle = screen.getByRole('switch', { name: 'Alternar status ativo de Peter Parker' });
     expect(toggle).not.toBeChecked();
   });
 
@@ -78,12 +80,14 @@ describe('HeroActions "More actions" menu', () => {
     const hero = makeHero({ is_active: true });
     renderWithClient(<HeroActions {...baseProps(hero)} onEdit={onEdit} />);
 
-    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
-    await user.click(screen.getByRole('menuitem', { name: 'Edit Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Mais ações de Peter Parker' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Editar Peter Parker' }));
 
     expect(onEdit).toHaveBeenCalledWith(hero);
     await waitFor(() =>
-      expect(screen.queryByRole('menuitem', { name: 'Edit Peter Parker' })).not.toBeInTheDocument(),
+      expect(
+        screen.queryByRole('menuitem', { name: 'Editar Peter Parker' }),
+      ).not.toBeInTheDocument(),
     );
   });
 
@@ -92,15 +96,15 @@ describe('HeroActions "More actions" menu', () => {
     vi.mocked(deleteHero).mockResolvedValue(undefined);
     renderWithClient(<HeroActions {...baseProps(makeHero({ is_active: true }))} />);
 
-    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
-    await user.click(screen.getByRole('menuitem', { name: 'Delete Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Mais ações de Peter Parker' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Excluir Peter Parker' }));
 
     await waitFor(() =>
       expect(
-        screen.queryByRole('menuitem', { name: 'Delete Peter Parker' }),
+        screen.queryByRole('menuitem', { name: 'Excluir Peter Parker' }),
       ).not.toBeInTheDocument(),
     );
-    expect(screen.getByText('Permanently delete hero?')).toBeInTheDocument();
+    expect(screen.getByText('Excluir herói permanentemente?')).toBeInTheDocument();
     expect(deleteHero).not.toHaveBeenCalled();
   });
 
@@ -109,15 +113,15 @@ describe('HeroActions "More actions" menu', () => {
     vi.mocked(updateHeroStatus).mockResolvedValue(makeHero({ is_active: false }));
     renderWithClient(<HeroActions {...baseProps(makeHero({ is_active: true }))} />);
 
-    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
-    await user.click(screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'Mais ações de Peter Parker' }));
+    await user.click(screen.getByRole('switch', { name: 'Alternar status ativo de Peter Parker' }));
 
     await waitFor(() =>
       expect(
-        screen.queryByRole('switch', { name: 'Toggle active state for Peter Parker' }),
+        screen.queryByRole('switch', { name: 'Alternar status ativo de Peter Parker' }),
       ).not.toBeInTheDocument(),
     );
-    expect(screen.getByText('Deactivate hero?')).toBeInTheDocument();
+    expect(screen.getByText('Desativar herói?')).toBeInTheDocument();
     expect(updateHeroStatus).not.toHaveBeenCalled();
   });
 });

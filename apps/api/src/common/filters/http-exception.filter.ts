@@ -45,7 +45,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     return {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       error: 'Internal Server Error',
-      message: 'An unexpected error occurred',
+      message: 'Ocorreu um erro inesperado',
     };
   }
 }

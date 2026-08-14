@@ -80,11 +80,11 @@ describe('HeroList', () => {
     renderWithClient(<HeroList />);
     await waitFor(() => expect(screen.getByTestId('hero-list-empty')).toBeInTheDocument());
 
-    await user.type(screen.getByLabelText('Search heroes'), 'batman');
-    await user.click(screen.getByRole('button', { name: 'Search' }));
+    await user.type(screen.getByLabelText('Buscar heróis'), 'batman');
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
 
     await waitFor(() => expect(screen.getByTestId('hero-list-no-results')).toBeInTheDocument());
-    expect(screen.getByText(/No heroes match/)).toHaveTextContent('batman');
+    expect(screen.getByText(/Nenhum herói encontrado/)).toHaveTextContent('batman');
     expect(listHeroes).toHaveBeenLastCalledWith(1, 'batman');
   });
 });

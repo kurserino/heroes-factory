@@ -17,13 +17,13 @@ export class AvatarUrlValidator {
       void response.body?.cancel?.();
 
       if (!response.ok || !contentType.startsWith('image/')) {
-        throw new BadRequestException(['avatar_url must resolve to a loadable image']);
+        throw new BadRequestException(['A URL do avatar precisa apontar para uma imagem válida']);
       }
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new BadRequestException(['avatar_url must resolve to a loadable image']);
+      throw new BadRequestException(['A URL do avatar precisa apontar para uma imagem válida']);
     } finally {
       clearTimeout(timeout);
     }

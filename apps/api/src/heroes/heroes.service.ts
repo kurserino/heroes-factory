@@ -44,7 +44,7 @@ export class HeroesService {
   async findOne(id: string): Promise<Hero> {
     const hero = await this.heroesRepository.findById(id);
     if (!hero) {
-      throw new NotFoundException(`Hero ${id} not found`);
+      throw new NotFoundException(`Herói ${id} não encontrado`);
     }
     return hero;
   }
@@ -57,7 +57,7 @@ export class HeroesService {
   async update(id: string, dto: UpdateHeroDto): Promise<Hero> {
     const existing = await this.findOne(id);
     if (!existing.is_active) {
-      throw new ConflictException('Cannot edit an inactive hero');
+      throw new ConflictException('Não é possível editar um herói inativo');
     }
     if (dto.avatar_url) {
       await this.avatarUrlValidator.assertLoadableImage(dto.avatar_url);
@@ -73,7 +73,7 @@ export class HeroesService {
   async remove(id: string): Promise<void> {
     const existing = await this.findOne(id);
     if (!existing.is_active) {
-      throw new ConflictException('Cannot delete an inactive hero');
+      throw new ConflictException('Não é possível excluir um herói inativo');
     }
     await this.heroesRepository.delete(id);
   }
