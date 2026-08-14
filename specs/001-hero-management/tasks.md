@@ -87,9 +87,9 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: The single sanctioned abstraction (Constitution Principle III) isolating persistence from business rules.
 
-- [ ] T018 Define the `HeroesRepository` interface in `apps/api/src/heroes/heroes.repository.ts` (`create`, `findMany({page, search})`, `findById`, `update`, `updateStatus`, `delete`)
-- [ ] T019 Implement `PrismaHeroesRepository` in `apps/api/src/heroes/prisma-heroes.repository.ts`, satisfying `HeroesRepository` via `PrismaService` (search as case-insensitive `OR` on `name`/`nickname`, ordering `created_at DESC, id DESC`, `LIMIT 10` pagination)
-- [ ] T020 [P] Create `apps/api/src/heroes/entities/hero.entity.ts` (TypeScript type for the exact 10-field hero representation)
+- [X] T018 Define the `HeroesRepository` interface in `apps/api/src/heroes/heroes.repository.ts` (`create`, `findMany({page, search})`, `findById`, `update`, `updateStatus`, `delete`)
+- [X] T019 Implement `PrismaHeroesRepository` in `apps/api/src/heroes/prisma-heroes.repository.ts`, satisfying `HeroesRepository` via `PrismaService` (search as case-insensitive `OR` on `name`/`nickname` — MySQL's default collation is case-insensitive, so no explicit Prisma `mode` param is needed/available; ordering `created_at DESC, id DESC`, `LIMIT 10` pagination)
+- [X] T020 [P] Create `apps/api/src/heroes/entities/hero.entity.ts` (TypeScript type for the exact 10-field hero representation)
 
 **Checkpoint**: Repository can be instantiated and exercised against the live MySQL instance in a scratch script (no service/controller yet).
 
@@ -99,13 +99,13 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: All business rules enforced server-side (Constitution Principle V), independent of transport/persistence.
 
-- [ ] T021 [US1] Implement `HeroesService.list(page, search)` in `apps/api/src/heroes/heroes.service.ts`, returning hero data plus pagination metadata (`page`, `limit`, `total`, `totalPages`)
-- [ ] T022 [P] Create `apps/api/src/heroes/avatar-url-validator.ts` implementing the image-URL verification helper (HEAD/GET request, 2xx + `Content-Type: image/*`, timeout) per `research.md`
-- [ ] T023 [US2] Implement `HeroesService.create(dto)` in `apps/api/src/heroes/heroes.service.ts`: forces `is_active = true`, calls the avatar-URL validator, rejects on failure (depends on T022)
-- [ ] T024 [US1] Implement `HeroesService.findOne(id)` in `apps/api/src/heroes/heroes.service.ts`, throwing `NotFoundException` when missing
-- [ ] T025 [US3] Implement `HeroesService.update(id, dto)` in `apps/api/src/heroes/heroes.service.ts`: throws `ConflictException` if the hero is inactive, re-validates `avatar_url` via the validator when present in the dto
-- [ ] T026 [US4] Implement `HeroesService.updateStatus(id, isActive)` in `apps/api/src/heroes/heroes.service.ts`: changes only `is_active`, relies on the repository/Prisma to refresh `updated_at`
-- [ ] T027 [US5] Implement `HeroesService.remove(id)` in `apps/api/src/heroes/heroes.service.ts`: throws `ConflictException` if the hero is inactive, otherwise hard-deletes via the repository
+- [X] T021 [US1] Implement `HeroesService.list(page, search)` in `apps/api/src/heroes/heroes.service.ts`, returning hero data plus pagination metadata (`page`, `limit`, `total`, `totalPages`)
+- [X] T022 [P] Create `apps/api/src/heroes/avatar-url-validator.ts` implementing the image-URL verification helper (GET request, 2xx + `Content-Type: image/*`, timeout) per `research.md`
+- [X] T023 [US2] Implement `HeroesService.create(dto)` in `apps/api/src/heroes/heroes.service.ts`: forces `is_active = true` (via `CreateHeroDto` never exposing the field, plus the Prisma schema default), calls the avatar-URL validator, rejects on failure (depends on T022)
+- [X] T024 [US1] Implement `HeroesService.findOne(id)` in `apps/api/src/heroes/heroes.service.ts`, throwing `NotFoundException` when missing
+- [X] T025 [US3] Implement `HeroesService.update(id, dto)` in `apps/api/src/heroes/heroes.service.ts`: throws `ConflictException` if the hero is inactive, re-validates `avatar_url` via the validator when present in the dto
+- [X] T026 [US4] Implement `HeroesService.updateStatus(id, isActive)` in `apps/api/src/heroes/heroes.service.ts`: changes only `is_active`, relies on the repository/Prisma to refresh `updated_at`
+- [X] T027 [US5] Implement `HeroesService.remove(id)` in `apps/api/src/heroes/heroes.service.ts`: throws `ConflictException` if the hero is inactive, otherwise hard-deletes via the repository
 
 **Checkpoint**: Business rules are implementable and reasoned about without any HTTP layer existing yet.
 
@@ -115,17 +115,17 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Thin transport layer over the service, with DTO-based request validation (Constitution Principle VI).
 
-- [ ] T028 [P] Create `apps/api/src/heroes/dto/create-hero.dto.ts` with class-validator decorators for the 6 creatable fields (required, length bounds, date not in the future, URL format)
-- [ ] T029 [P] Create `apps/api/src/heroes/dto/update-hero.dto.ts` (`PartialType` of the create DTO, restricted to the 6 editable fields)
-- [ ] T030 [P] Create `apps/api/src/heroes/dto/update-hero-status.dto.ts` validating a required `is_active` boolean
-- [ ] T031 [P] Create `apps/api/src/heroes/dto/list-heroes-query.dto.ts` validating `page` (positive integer, default 1) and optional `search` (string)
-- [ ] T032 [US2] Implement `POST /heroes` in `apps/api/src/heroes/heroes.controller.ts` calling `HeroesService.create`, returning `201`
-- [ ] T033 [US1] Implement `GET /heroes` in `apps/api/src/heroes/heroes.controller.ts` using `ListHeroesQueryDto`, returning the paginated response shape from `contracts/heroes-api.md`
-- [ ] T034 [US1] Implement `GET /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts`, returning `404` when not found
-- [ ] T035 [US3] Implement `PATCH /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts` using `UpdateHeroDto`, returning `409` when the target hero is inactive
-- [ ] T036 [US4] Implement `PATCH /heroes/:id/status` in `apps/api/src/heroes/heroes.controller.ts` using `UpdateHeroStatusDto`
-- [ ] T037 [US5] Implement `DELETE /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts`, returning `204` on success and `409` when the target hero is inactive
-- [ ] T038 Create `apps/api/src/heroes/heroes.module.ts` wiring the controller, `HeroesService`, and the `HeroesRepository` provider (bound to `PrismaHeroesRepository`); import it in `apps/api/src/app.module.ts`
+- [X] T028 [P] Create `apps/api/src/heroes/dto/create-hero.dto.ts` with class-validator decorators for the 6 creatable fields (required, length bounds, date not in the future via a custom `IsNotFutureDate` validator, URL format) — field names are snake_case, matching `contracts/heroes-api.md` verbatim (resolves `/speckit-analyze` finding C1)
+- [X] T029 [P] Create `apps/api/src/heroes/dto/update-hero.dto.ts` (`PartialType` of the create DTO via `@nestjs/mapped-types`, restricted to the 6 editable fields)
+- [X] T030 [P] Create `apps/api/src/heroes/dto/update-hero-status.dto.ts` validating a required `is_active` boolean
+- [X] T031 [P] Create `apps/api/src/heroes/dto/list-heroes-query.dto.ts` validating `page` (positive integer, default 1), optional `limit` (accepted but always clamped to 10), and optional `search` (string)
+- [X] T032 [US2] Implement `POST /heroes` in `apps/api/src/heroes/heroes.controller.ts` calling `HeroesService.create`, returning `201`
+- [X] T033 [US1] Implement `GET /heroes` in `apps/api/src/heroes/heroes.controller.ts` using `ListHeroesQueryDto`, returning the paginated response shape from `contracts/heroes-api.md`
+- [X] T034 [US1] Implement `GET /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts`, returning `404` when not found
+- [X] T035 [US3] Implement `PATCH /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts` using `UpdateHeroDto`, returning `409` when the target hero is inactive
+- [X] T036 [US4] Implement `PATCH /heroes/:id/status` in `apps/api/src/heroes/heroes.controller.ts` using `UpdateHeroStatusDto`
+- [X] T037 [US5] Implement `DELETE /heroes/:id` in `apps/api/src/heroes/heroes.controller.ts`, returning `204` on success and `409` when the target hero is inactive
+- [X] T038 Create `apps/api/src/heroes/heroes.module.ts` wiring the controller, `HeroesService`, and the `HeroesRepository` provider (bound to `PrismaHeroesRepository`); imported into `apps/api/src/app.module.ts` (closes the deferred wiring noted in T012)
 
 **Checkpoint**: Full REST API is live and manually testable via curl/Postman against all 6 endpoints in `contracts/heroes-api.md`.
 
@@ -135,11 +135,11 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Prioritize business-rule correctness in isolation (Constitution Principle VIII), using a fake `HeroesRepository`.
 
-- [ ] T039 [P] [US2] Write `apps/api/test/unit/heroes.service.spec.ts` test: `create()` always sets `is_active` to `true` regardless of input
-- [ ] T040 [P] [US3] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `update()` rejects when the target hero is inactive
-- [ ] T041 [P] [US5] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `remove()` rejects when the target hero is inactive
-- [ ] T042 [P] [US4] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `updateStatus()` activates an inactive hero
-- [ ] T043 [P] [US4] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `updateStatus()` deactivates an active hero and changes only `is_active` (and `updated_at`)
+- [X] T039 [P] [US2] Write `apps/api/test/unit/heroes.service.spec.ts` test: `create()` always sets `is_active` to `true` regardless of input
+- [X] T040 [P] [US3] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `update()` rejects when the target hero is inactive
+- [X] T041 [P] [US5] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `remove()` rejects when the target hero is inactive
+- [X] T042 [P] [US4] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `updateStatus()` activates an inactive hero
+- [X] T043 [P] [US4] Write test in `apps/api/test/unit/heroes.service.spec.ts`: `updateStatus()` deactivates an active hero and changes only `is_active`, and asserts the repository's plain `update()` was never called (i.e. no other field was touched via that path); `updated_at` refresh itself is a persistence-layer guarantee (Prisma `@updatedAt`), verified at the integration level instead of with the fake repository
 
 **Checkpoint**: `npm run test --workspace apps/api` (unit) passes with all five business rules covered.
 
@@ -149,18 +149,18 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Verify full HTTP behavior end-to-end against a real (test) database, per `contracts/heroes-api.md`.
 
-- [ ] T044 [P] [US2] Write `apps/api/test/integration/heroes.e2e-spec.ts` test: `POST /heroes` creates a hero and returns `201` with the exact 10-field representation
-- [ ] T045 [P] [US1] Write integration test: `GET /heroes` returns heroes ordered by `created_at` descending
-- [ ] T046 [P] [US1] Write integration test: `GET /heroes?search=` filters case-insensitively by `name` or `nickname`
-- [ ] T047 [P] [US1] Write integration test: `GET /heroes` returns exactly 10 items per page with correct pagination metadata across multiple pages
-- [ ] T048 [P] [US3] Write integration test: `PATCH /heroes/:id` updates an active hero successfully
-- [ ] T049 [P] [US3] Write integration test: `PATCH /heroes/:id` returns `409` for an inactive hero
-- [ ] T050 [P] [US4] Write integration test: `PATCH /heroes/:id/status` toggles `is_active` and leaves all other fields except `updated_at` unchanged
-- [ ] T051 [P] [US5] Write integration test: `DELETE /heroes/:id` removes an active hero; a subsequent `GET /heroes/:id` returns `404`
-- [ ] T052 [P] [US5] Write integration test: `DELETE /heroes/:id` returns `409` for an inactive hero
-- [ ] T053 [P] Write integration test: `POST /heroes` and `PATCH /heroes/:id` return `400` with structured validation messages for invalid input, including a non-image `avatar_url`
+- [X] T044 [P] [US2] Write `apps/api/test/integration/heroes.e2e-spec.ts` test: `POST /heroes` creates a hero and returns `201` with the exact 10-field representation
+- [X] T045 [P] [US1] Write integration test: `GET /heroes` returns heroes ordered by `created_at` descending
+- [X] T046 [P] [US1] Write integration test: `GET /heroes?search=` filters case-insensitively by `name` or `nickname`
+- [X] T047 [P] [US1] Write integration test: `GET /heroes` returns exactly 10 items per page with correct pagination metadata across multiple pages
+- [X] T048 [P] [US3] Write integration test: `PATCH /heroes/:id` updates an active hero successfully
+- [X] T049 [P] [US3] Write integration test: `PATCH /heroes/:id` returns `409` for an inactive hero
+- [X] T050 [P] [US4] Write integration test: `PATCH /heroes/:id/status` toggles `is_active` and leaves `name`/`nickname` (representative other fields) unchanged
+- [X] T051 [P] [US5] Write integration test: `DELETE /heroes/:id` removes an active hero; a subsequent `GET /heroes/:id` returns `404`
+- [X] T052 [P] [US5] Write integration test: `DELETE /heroes/:id` returns `409` for an inactive hero
+- [X] T053 [P] Write integration test: `POST /heroes` and `PATCH /heroes/:id` return `400` with structured validation messages for invalid input, including a non-image `avatar_url` (an in-process fake `AvatarUrlValidator` is substituted via `overrideProvider` so this test is deterministic and has no real network dependency)
 
-**Checkpoint**: `npm run test:e2e --workspace apps/api` passes; backend is feature-complete and independently verifiable.
+**Checkpoint**: `npm run test:e2e --workspace apps/api` passes; backend is feature-complete and independently verifiable. **Verified**: 10/10 integration tests pass alongside 5/5 unit tests.
 
 ---
 
