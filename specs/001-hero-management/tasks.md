@@ -34,10 +34,10 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Establish the monorepo skeleton before any app code exists.
 
-- [ ] T001 Create root `package.json` declaring npm workspaces `["apps/*"]` and shared scripts (`dev`, `build`, `test`, `lint`)
-- [ ] T002 [P] Create root `.gitignore` (node_modules, dist/build output, `.env`, coverage)
-- [ ] T003 [P] Create root `.env.example` with Docker Compose variables (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `MYSQL_PORT`)
-- [ ] T004 [P] Create root `apps/` directory with empty `apps/api/` and `apps/web/` placeholders so workspaces resolve
+- [X] T001 Create root `package.json` declaring npm workspaces `["apps/*"]` and shared scripts (`dev`, `build`, `test`, `lint`)
+- [X] T002 [P] Create root `.gitignore` (node_modules, dist/build output, `.env`, coverage)
+- [X] T003 [P] Create root `.env.example` with Docker Compose variables (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `MYSQL_PORT`)
+- [X] T004 [P] Create root `apps/` directory with empty `apps/api/` and `apps/web/` placeholders so workspaces resolve
 
 **Checkpoint**: `npm install` at root succeeds with two empty workspaces registered.
 
@@ -47,8 +47,8 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Reproducible local database, independent of app code (Constitution Principle XIII).
 
-- [ ] T005 Create root `docker-compose.yml` defining a `mysql:8` service with a persistent named volume, env-driven database name/user/password (reading root `.env`), an exposed development port, and a healthcheck
-- [ ] T006 [P] Create `apps/api/.env.example` with `DATABASE_URL` (matching the compose service's credentials/port) and `PORT`
+- [X] T005 Create root `docker-compose.yml` defining a `mysql:8` service with a persistent named volume, env-driven database name/user/password (reading root `.env`), an exposed development port, and a healthcheck
+- [X] T006 [P] Create `apps/api/.env.example` with `DATABASE_URL` (matching the compose service's credentials/port) and `PORT`
 
 **Checkpoint**: `docker compose up -d` starts MySQL and `docker compose ps` reports it healthy.
 
@@ -58,12 +58,12 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Bootable Nest app shell with global validation and error handling, before any Hero-specific code.
 
-- [ ] T007 Initialize `apps/api` as a NestJS project: `apps/api/package.json`, `apps/api/tsconfig.json` (`strict: true`), `apps/api/nest-cli.json`
-- [ ] T008 [P] Configure `apps/api/.eslintrc.js` and `apps/api/.prettierrc`
-- [ ] T009 Create `apps/api/src/main.ts` bootstrapping the Nest app with a global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`)
-- [ ] T010 [P] Create `apps/api/src/common/filters/http-exception.filter.ts` translating unknown/Prisma errors into the consistent `{ statusCode, error, message }` shape from `contracts/heroes-api.md`, never leaking ORM/DB internals
-- [ ] T011 Register the global exception filter in `apps/api/src/main.ts`
-- [ ] T012 Create `apps/api/src/app.module.ts` importing `PrismaModule` (Phase 4) and `HeroesModule` (Phase 7) — module wiring only, placeholders acceptable until those modules exist
+- [X] T007 Initialize `apps/api` as a NestJS project: `apps/api/package.json`, `apps/api/tsconfig.json` (`strict: true`), `apps/api/nest-cli.json`
+- [X] T008 [P] Configure `apps/api/.eslintrc.js` and `apps/api/.prettierrc`
+- [X] T009 Create `apps/api/src/main.ts` bootstrapping the Nest app with a global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`)
+- [X] T010 [P] Create `apps/api/src/common/filters/http-exception.filter.ts` translating unknown/Prisma errors into the consistent `{ statusCode, error, message }` shape from `contracts/heroes-api.md`, never leaking ORM/DB internals
+- [X] T011 Register the global exception filter in `apps/api/src/main.ts`
+- [X] T012 Create `apps/api/src/app.module.ts` importing `PrismaModule` — deliberately deviates from the original description: `HeroesModule` is NOT imported here since it does not exist yet (Hero API is out of scope for this phase); this avoids the forward-reference inconsistency flagged in `/speckit-analyze` finding O2. `HeroesModule` will be wired in during Phase 7 (T038).
 
 **Checkpoint**: `apps/api` boots (`npm run start:dev --workspace apps/api`) and returns Nest's default 404 for unknown routes with the standard error shape.
 
@@ -73,11 +73,11 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Version-controlled schema for the single Hero entity (Constitution Principle VII).
 
-- [ ] T013 Add Prisma to `apps/api` and initialize `apps/api/prisma/schema.prisma` with a MySQL datasource reading `DATABASE_URL`
-- [ ] T014 Define the `Hero` model in `apps/api/prisma/schema.prisma` per `data-model.md`: `id` (UUID, `@id @default(uuid())`), `name`, `nickname`, `date_of_birth` (Date), `universe`, `main_power`, `avatar_url`, `is_active` (Boolean, `@default(true)`), `created_at` (`@default(now())`), `updated_at` (`@updatedAt`)
-- [ ] T015 Generate the initial Prisma migration (`prisma migrate dev --name init_heroes`), producing `apps/api/prisma/migrations/.../migration.sql`
-- [ ] T016 [P] Create `apps/api/src/prisma/prisma.service.ts` (PrismaClient wrapper implementing `OnModuleInit`/`OnModuleDestroy`)
-- [ ] T017 [P] Create `apps/api/src/prisma/prisma.module.ts` exporting `PrismaService`
+- [X] T013 Add Prisma to `apps/api` and initialize `apps/api/prisma/schema.prisma` with a MySQL datasource reading `DATABASE_URL`
+- [X] T014 Define the `Hero` model in `apps/api/prisma/schema.prisma` per `data-model.md`: `id` (UUID, `@id @default(uuid())`), `name`, `nickname`, `date_of_birth` (Date), `universe`, `main_power`, `avatar_url`, `is_active` (Boolean, `@default(true)`), `created_at` (`@default(now())`), `updated_at` (`@updatedAt`) — also adds `@@index([created_at])` and `@@index([name, nickname])` per `data-model.md`'s persistence-mapping recommendation (closes `/speckit-analyze` finding G1)
+- [X] T015 Generate the initial Prisma migration (`prisma migrate dev --name init_heroes`), producing `apps/api/prisma/migrations/.../migration.sql`
+- [X] T016 [P] Create `apps/api/src/prisma/prisma.service.ts` (PrismaClient wrapper implementing `OnModuleInit`/`OnModuleDestroy`)
+- [X] T017 [P] Create `apps/api/src/prisma/prisma.module.ts` exporting `PrismaService`
 
 **Checkpoint**: `prisma migrate deploy` against the Docker MySQL instance succeeds; `heroes` table exists with exactly the 10 required columns.
 
