@@ -1,114 +1,121 @@
 # Heroes Factory
 
-A small full-stack CRUD application for managing hero records: create, browse, search,
-inspect, edit, activate/deactivate, and permanently delete heroes.
+Uma pequena aplicação full-stack CRUD para gerenciar registros de heróis: criar,
+listar, buscar, visualizar, editar, ativar/desativar e excluir heróis permanentemente.
 
-## Overview
+## Visão geral
 
-A hero has a name, nickname, date of birth, universe, main power, and avatar image, plus
-an active/inactive lifecycle state. The application enforces a small set of business rules
-around that lifecycle:
+Um herói tem nome, nome de guerra, data de nascimento, universo, habilidade principal
+e imagem de avatar, além de um estado de ciclo de vida ativo/inativo. A aplicação impõe
+um pequeno conjunto de regras de negócio em torno desse ciclo de vida:
 
-- New heroes are always created **active**.
-- Only **active** heroes can be edited or permanently deleted.
-- **Inactive** heroes can only be reactivated — no other action is available for them.
-- Deletion is **permanent** (hard delete). There is no "trash," no `deleted_at` field, and
-  no way to recover a deleted hero.
+- Novos heróis são sempre criados **ativos**.
+- Apenas heróis **ativos** podem ser editados ou excluídos permanentemente.
+- Heróis **inativos** só podem ser reativados — nenhuma outra ação está disponível
+  para eles.
+- A exclusão é **permanente** (hard delete). Não existe "lixeira", nem campo
+  `deleted_at`, nem forma de recuperar um herói excluído.
 
-The scope is intentionally small: one resource, one primary screen, no authentication. The
-goal is to demonstrate clean architecture, correct business-rule enforcement, and
-maintainable code rather than feature breadth.
+O escopo é intencionalmente pequeno: um recurso, uma tela principal, sem autenticação.
+O objetivo é demonstrar arquitetura limpa, aplicação correta das regras de negócio e
+código sustentável, em vez de amplitude de funcionalidades.
 
-## Architecture
+## Arquitetura
 
 ```
 Frontend (React SPA)  ──HTTP/JSON──►  Backend (NestJS REST API)  ──Prisma──►  MySQL 8
 ```
 
-**Backend** follows a layered flow — `Controller → Service → Repository → Prisma → MySQL`:
+**Backend** segue um fluxo em camadas — `Controller → Service → Repository → Prisma → MySQL`:
 
-- **Controller**: HTTP transport only (routes, status codes, DTO validation).
-- **Service**: business rules (default-active creation, active-state gating on
-  edit/delete, avatar-URL verification), independent of HTTP and persistence details.
-- **Repository**: the single abstraction in the codebase, isolating Prisma from the
-  service. It exists for one concrete reason — it lets the service be unit-tested with an
-  in-memory fake, without a real database.
-- No use-case objects, mappers, gateways, or domain-event layers were introduced. With a
-  single resource and no cross-cutting workflows, they would have no problem to solve.
+- **Controller**: apenas transporte HTTP (rotas, status codes, validação de DTO).
+- **Service**: regras de negócio (criação sempre ativa por padrão, restrição de
+  edição/exclusão a heróis ativos, verificação da URL do avatar), independente de
+  detalhes de HTTP e persistência.
+- **Repository**: a única abstração do código-base, isolando o Prisma do service.
+  Ela existe por um motivo concreto — permite testar o service com um fake em memória,
+  sem um banco de dados real.
+- Nenhum objeto de caso de uso, mapper, gateway ou camada de domain-event foi
+  introduzido. Com um único recurso e sem fluxos transversais, eles não teriam
+  problema algum para resolver.
 
-**Frontend** has no global state manager. All server state (list, detail, mutations,
-cache invalidation) is owned by TanStack Query; everything else (which dialog is open,
-which hero is selected) is local component state. There is also no router — the app is a
-single screen with modal/menu-driven interactions.
+**Frontend** não tem gerenciador de estado global. Todo o estado de servidor (lista,
+detalhes, mutações, invalidação de cache) é gerenciado pelo TanStack Query; tudo o
+mais (qual modal está aberto, qual herói está selecionado) é estado local de
+componente. Também não há roteador — a aplicação é uma tela única com interações
+via modal/menu.
 
-Both apps are TypeScript in `strict` mode, and every dependency in the stack maps to a
-concrete requirement (see [Trade-offs](#trade-offs-and-decisions) below).
+Ambas as aplicações usam TypeScript em modo `strict`, e cada dependência da stack
+corresponde a uma necessidade concreta (veja [Trade-offs](#trade-offs-e-decisões)
+abaixo).
 
-## Folder structure
+## Estrutura de pastas
 
 ```
 heroes-factory/
-├── docker-compose.yml       # MySQL 8 only — the API and web app run locally via Node.js
-├── package.json              # npm workspaces root; shared dev/build/test/lint scripts
-├── .env.example               # Docker Compose variables (DB name/user/password/port)
+├── docker-compose.yml       # Apenas o MySQL 8 — a API e o frontend rodam localmente via Node.js
+├── package.json              # Raiz com npm workspaces; scripts compartilhados de dev/build/test/lint
+├── .env.example               # Variáveis do Docker Compose (nome/usuário/senha/porta do banco)
 │
 ├── apps/
-│   ├── api/                   # NestJS + Prisma REST API
+│   ├── api/                   # API REST NestJS + Prisma
 │   │   ├── prisma/
-│   │   │   ├── schema.prisma      # Hero model, MySQL datasource
-│   │   │   └── migrations/        # version-controlled schema history
+│   │   │   ├── schema.prisma      # Model Hero, datasource MySQL
+│   │   │   ├── seed.ts             # Popula o banco a partir do dataset em seed-data/
+│   │   │   ├── seed-data/          # heroes.json — dataset em cache de heróis reais
+│   │   │   └── migrations/        # histórico de schema versionado
 │   │   ├── src/
-│   │   │   ├── common/            # global exception filter (consistent error shape)
+│   │   │   ├── common/            # filtro de exceção global (formato de erro consistente)
 │   │   │   ├── prisma/             # PrismaService/PrismaModule
-│   │   │   └── heroes/             # the one feature module
-│   │   │       ├── dto/                    # request validation (class-validator)
-│   │   │       ├── entities/               # the 10-field API representation
+│   │   │   └── heroes/             # o único módulo de feature
+│   │   │       ├── dto/                    # validação de request (class-validator)
+│   │   │       ├── entities/               # a representação da API com 10 campos
 │   │   │       ├── heroes.controller.ts
-│   │   │       ├── heroes.service.ts        # business rules live here
-│   │   │       ├── heroes.repository.ts     # abstract interface
+│   │   │       ├── heroes.service.ts        # as regras de negócio ficam aqui
+│   │   │       ├── heroes.repository.ts     # interface abstrata
 │   │   │       ├── prisma-heroes.repository.ts
-│   │   │       ├── avatar-url-validator.ts  # verifies avatar_url resolves to an image
+│   │   │       ├── avatar-url-validator.ts  # verifica se avatar_url resolve pra uma imagem
 │   │   │       └── heroes.module.ts
 │   │   └── test/
-│   │       ├── unit/               # HeroesService + AvatarUrlValidator, in isolation
-│   │       └── integration/        # full HTTP behavior against a real database
+│   │       ├── unit/               # HeroesService + AvatarUrlValidator, isolados
+│   │       └── integration/        # comportamento HTTP completo contra um banco real
 │   │
-│   └── web/                   # React + Vite frontend
+│   └── web/                   # Frontend React + Vite
 │       └── src/
-│           ├── app/                 # App shell, theme, TanStack QueryClient
-│           ├── lib/                  # fetch wrapper + API error normalization
-│           ├── components/ui/        # generic, reusable (non-feature) UI pieces
+│           ├── app/                 # Shell da aplicação, tema, TanStack QueryClient
+│           ├── lib/                  # wrapper de fetch + normalização de erros de API
+│           ├── components/ui/        # peças de UI genéricas e reutilizáveis (não específicas da feature)
 │           └── features/heroes/
-│               ├── api/               # heroesApi.ts (fetch calls) + heroesQueries.ts (TanStack Query hooks)
-│               ├── components/        # HeroList, HeroCard, HeroActions, dialogs, states, etc.
-│               ├── hooks/             # useHeroListParams (page/search local state)
-│               ├── schemas/           # Zod validation for the create/edit form
-│               └── types/             # Hero TypeScript type
+│               ├── api/               # heroesApi.ts (chamadas fetch) + heroesQueries.ts (hooks do TanStack Query)
+│               ├── components/        # HeroList, HeroCard, HeroActions, dialogs, estados, etc.
+│               ├── hooks/             # useHeroListParams (estado local de página/busca)
+│               ├── schemas/           # validação Zod do formulário de criação/edição
+│               └── types/             # tipo TypeScript Hero
 │
-└── specs/001-hero-management/   # spec-driven design artifacts (spec, plan, tasks, contracts)
+└── specs/001-hero-management/   # artefatos de design orientado por spec (spec, plan, tasks, contracts)
 ```
 
-## Technology choices and reasoning
+## Escolhas tecnológicas e justificativa
 
-| Choice | Why |
-|---|---|
-| **npm workspaces**, no Turborepo/Nx | Two packages with no shared internal library don't need build-graph tooling; workspaces alone give shared installs and root scripts. |
-| **NestJS** | Structured, convention-driven Nest modules map directly onto the Controller→Service→Repository layering the constitution requires, with DI making the repository swap for testing trivial. |
-| **Prisma** | Type-safe queries, and migrations are a first-class, version-controlled artifact — no hand-written SQL migration files to keep in sync. |
-| **MySQL 8 via Docker Compose** | Reproducible local database without installing MySQL on the host; only the database is containerized, so app processes iterate with normal `npm run dev` hot-reload. |
-| **One repository abstraction (`HeroesRepository`)** | The single sanctioned abstraction: it lets `HeroesService`'s business rules be unit-tested with a fake, without a database. No other abstraction layer was added. |
-| **React + Vite** | Fast dev server, minimal config, no framework opinions the app's single screen doesn't need. |
-| **Material UI** | Provides accessible-by-default primitives (dialogs, menus, switches) so accessibility didn't need to be built from scratch. |
-| **TanStack Query, no Redux** | The only cross-component state is server data; TanStack Query's cache is already the source of truth for it, so a second global store would just duplicate state. |
-| **React Hook Form + Zod** | Minimal re-renders, and a typed schema that mirrors the backend's validation rules for fast client-side feedback — while the backend remains the actual source of truth. |
-| **Jest/Supertest (backend), Vitest/RTL (frontend)** | Each toolchain's native default — minimizes configuration surface rather than introducing a second bundler/runner. |
+| Escolha                                                     | Por quê                                                                                                                                                                               |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **npm workspaces**, sem Turborepo/Nx                        | Dois pacotes sem biblioteca interna compartilhada não precisam de ferramentas de build-graph; workspaces sozinho já dá instalação compartilhada e scripts na raiz.                    |
+| **NestJS**                                                  | Módulos Nest estruturados e orientados por convenção mapeiam diretamente para a camada Controller→Service→Repository exigida, com DI tornando trivial trocar o repository nos testes. |
+| **Prisma**                                                  | Queries type-safe, e migrations são um artefato de primeira classe e versionado — sem arquivos de migration SQL escritos à mão pra manter sincronizados.                              |
+| **MySQL 8 via Docker Compose**                              | Banco de dados local reprodutível sem instalar MySQL na máquina; apenas o banco roda em container, então os processos da aplicação iteram com o hot-reload normal do `npm run dev`.   |
+| **Uma única abstração de repositório (`HeroesRepository`)** | A única abstração sancionada: permite testar as regras de negócio do `HeroesService` com um fake, sem banco de dados. Nenhuma outra camada de abstração foi adicionada.               |
+| **React + Vite**                                            | Dev server rápido, configuração mínima, sem opiniões de framework que a tela única da aplicação não precisa.                                                                          |
+| **Material UI**                                             | Fornece primitivos acessíveis por padrão (dialogs, menus, switches), então a acessibilidade não precisou ser construída do zero.                                                      |
+| **TanStack Query, sem Redux**                               | O único estado entre componentes é dado de servidor; o cache do TanStack Query já é a fonte da verdade pra isso, então uma segunda store global só duplicaria estado.                 |
+| **React Hook Form + Zod**                                   | Poucos re-renders, e um schema tipado que espelha as regras de validação do backend pra feedback rápido no cliente — enquanto o backend continua sendo a fonte real da verdade.       |
+| **Jest/Supertest (backend), Vitest/RTL (frontend)**         | O padrão nativo de cada toolchain — minimiza a superfície de configuração em vez de introduzir um segundo bundler/runner.                                                             |
 
-## Prerequisites
+## Pré-requisitos
 
-- Node.js 20 LTS and npm
-- Docker (for the MySQL 8 container)
+- Node.js 20 LTS e npm
+- Docker (para o container do MySQL 8)
 
-## Environment setup
+## Configuração do ambiente
 
 ```bash
 cp .env.example .env
@@ -116,144 +123,170 @@ cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 ```
 
-Defaults work out of the box for local development. `apps/api/.env`'s `DATABASE_URL` must
-match the root `.env`'s MySQL credentials/port if you change them.
+Os valores padrão já funcionam para desenvolvimento local. O `DATABASE_URL` de
+`apps/api/.env` precisa bater com as credenciais/porta do MySQL do `.env` da raiz,
+caso você as altere.
 
-## Installing dependencies
+## Instalando as dependências
 
 ```bash
 npm install
 ```
 
-Run once at the repository root — npm workspaces installs both `apps/api` and `apps/web`.
+Rode uma única vez na raiz do repositório — os npm workspaces instalam tanto
+`apps/api` quanto `apps/web`.
 
-## Starting MySQL with Docker
+## Subindo o MySQL com Docker
 
 ```bash
 docker compose up -d
-docker compose ps   # confirm the mysql service is "healthy"
+docker compose ps   # confirme que o serviço mysql está "healthy"
 ```
 
-This starts MySQL 8 with a persistent named volume, so data survives container restarts.
-Only the database runs in Docker; the API and frontend run locally via Node.js.
+Isso sobe o MySQL 8 com um volume nomeado persistente, então os dados sobrevivem a
+reinícios do container. Apenas o banco roda em Docker; a API e o frontend rodam
+localmente via Node.js.
 
-## Running migrations
+## Rodando as migrations
 
 ```bash
 npm run migrate:dev --workspace apps/api
 ```
 
-Applies (and, if the schema changed, generates) migrations against the running database.
-For a non-interactive/CI-style apply of already-committed migrations, use
-`npm run migrate --workspace apps/api` instead (`prisma migrate deploy`).
+Aplica (e, se o schema mudou, gera) migrations contra o banco em execução. Para uma
+aplicação não interativa/estilo CI de migrations já commitadas, use
+`npm run migrate --workspace apps/api` (`prisma migrate deploy`).
 
-> **Note**: `migrate:dev` needs permission to create a temporary shadow database to detect
-> drift. The default `heroes_app` user (see `docker-compose.yml`) may need broader grants
-> for this in a fresh environment — for local development this is a one-time
-> `GRANT ALL PRIVILEGES ON *.* TO 'heroes_app'@'%'` run against the MySQL container. This
-> is a local-dev convenience only; `migrate deploy` (used for repeatable/CI applies) does
-> not need it.
+> **Nota**: o `migrate:dev` precisa de permissão pra criar um shadow database
+> temporário e detectar divergências. O usuário padrão `heroes_app` (veja
+> `docker-compose.yml`) pode precisar de grants mais amplos pra isso num ambiente
+> novo — para desenvolvimento local, isso é um `GRANT ALL PRIVILEGES ON *.* TO
+'heroes_app'@'%'` executado uma única vez contra o container do MySQL. Isso é só
+> uma conveniência de dev local; o `migrate deploy` (usado pra aplicações
+> repetíveis/CI) não precisa disso.
 
-## Starting the API
+## Populando o banco com dados de exemplo (seed)
+
+```bash
+npm run seed --workspace apps/api
+```
+
+Insere 50 heróis reais (nome, nome de guerra, universo, habilidade e avatar) a
+partir de um dataset em cache em `apps/api/prisma/seed-data/heroes.json`, sem
+depender de nenhuma API externa em tempo de execução. A quantidade é configurável:
+
+```bash
+npm run seed --workspace apps/api -- --count=50
+```
+
+Se omitido, o padrão é 50 (o tamanho do dataset em cache). Pedir uma quantidade
+maior que 50 faz o script repetir o dataset em ciclo até atingir a quantidade
+pedida.
+
+## Iniciando a API
 
 ```bash
 npm run dev --workspace apps/api
 ```
 
-Starts the NestJS server in watch mode at `http://localhost:3000`.
+Inicia o servidor NestJS em modo watch em `http://localhost:3000`.
 
-## Starting the frontend
+## Iniciando o frontend
 
 ```bash
 npm run dev --workspace apps/web
 ```
 
-Starts the Vite dev server at `http://localhost:5173`.
+Inicia o dev server do Vite em `http://localhost:5173`.
 
-**Run both at once** from the repository root:
+**Rodar os dois ao mesmo tempo** a partir da raiz do repositório:
 
 ```bash
 npm run dev
 ```
 
-## Running tests
+## Rodando os testes
 
 ```bash
-npm run test --workspace apps/api        # backend unit tests
-npm run test:e2e --workspace apps/api    # backend integration tests (needs the DB running)
-npm run test --workspace apps/web        # frontend component tests
+npm run test --workspace apps/api        # testes unitários do backend
+npm run test:e2e --workspace apps/api    # testes de integração do backend (precisa do banco rodando)
+npm run test --workspace apps/web        # testes de componente do frontend
 
-npm run test      # runs each workspace's default "test" script (unit/component only)
-npm run lint       # lints both workspaces
+npm run test      # roda o script "test" padrão de cada workspace (apenas unitário/componente)
+npm run lint       # lint em ambos os workspaces
 ```
 
-## REST API endpoints
+## Endpoints da API REST
 
-Base path: `/heroes`. No authentication. All requests/responses are JSON.
+Base path: `/heroes`. Sem autenticação. Todas as requisições/respostas são JSON.
 
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/heroes` | Create a hero (always created active) |
-| `GET` | `/heroes?page=&search=` | List heroes, paginated (10/page), optional name/nickname search |
-| `GET` | `/heroes/:id` | Retrieve a single hero's full details |
-| `PATCH` | `/heroes/:id` | Edit an active hero's editable fields (rejects inactive heroes) |
-| `PATCH` | `/heroes/:id/status` | Change only `is_active` (activate or deactivate) |
-| `DELETE` | `/heroes/:id` | Permanently delete an active hero (rejects inactive heroes) |
+| Método   | Caminho                 | Descrição                                                                  |
+| -------- | ----------------------- | -------------------------------------------------------------------------- |
+| `POST`   | `/heroes`               | Cria um herói (sempre criado ativo)                                        |
+| `GET`    | `/heroes?page=&search=` | Lista heróis, paginado (10/página), busca opcional por nome/nome de guerra |
+| `GET`    | `/heroes/:id`           | Retorna os detalhes completos de um herói                                  |
+| `PATCH`  | `/heroes/:id`           | Edita os campos editáveis de um herói ativo (rejeita heróis inativos)      |
+| `PATCH`  | `/heroes/:id/status`    | Altera apenas `is_active` (ativar ou desativar)                            |
+| `DELETE` | `/heroes/:id`           | Exclui permanentemente um herói ativo (rejeita heróis inativos)            |
 
-A hero's API representation always contains exactly these fields: `id`, `name`,
-`nickname`, `date_of_birth`, `universe`, `main_power`, `avatar_url`, `is_active`,
-`created_at`, `updated_at`. Error responses share a consistent
-`{ statusCode, error, message }` shape; ORM/database internals are never leaked to the
-client. Full request/response examples: [`specs/001-hero-management/contracts/heroes-api.md`](specs/001-hero-management/contracts/heroes-api.md).
+A representação de um herói na API sempre contém exatamente estes campos: `id`,
+`name`, `nickname`, `date_of_birth`, `universe`, `main_power`, `avatar_url`,
+`is_active`, `created_at`, `updated_at`. Respostas de erro compartilham um formato
+consistente `{ statusCode, error, message }`; detalhes internos de ORM/banco de
+dados nunca são expostos ao cliente. Exemplos completos de request/response:
+[`specs/001-hero-management/contracts/heroes-api.md`](specs/001-hero-management/contracts/heroes-api.md).
 
-## Business rules: active/inactive heroes
+## Regras de negócio: heróis ativos/inativos
 
-- A hero is **active** by default when created.
-- **Active** heroes may be edited, deactivated, or permanently deleted.
-- **Inactive** heroes may only be reactivated — editing or deleting an inactive hero is
-  rejected, both in what the UI offers and independently at the API level (`409
-  Conflict`), so the rule holds even if a request bypasses the UI.
-- Activating/deactivating changes only `is_active` (and refreshes `updated_at`); every
-  other field is left untouched.
-- Every activation/deactivation and every deletion requires explicit user confirmation
-  before it's applied.
+- Um herói é **ativo** por padrão quando criado.
+- Heróis **ativos** podem ser editados, desativados ou excluídos permanentemente.
+- Heróis **inativos** só podem ser reativados — editar ou excluir um herói inativo é
+  rejeitado, tanto no que a UI oferece quanto de forma independente no nível da API
+  (`409 Conflict`), então a regra vale mesmo que uma requisição contorne a UI.
+- Ativar/desativar altera apenas `is_active` (e atualiza `updated_at`); todos os
+  outros campos permanecem intocados.
+- Toda ativação/desativação e toda exclusão exige confirmação explícita do usuário
+  antes de ser aplicada.
 
-## Permanent deletion behavior
+## Comportamento de exclusão permanente
 
-Deletion is a hard delete: the database row is removed entirely. There is no `deleted_at`
-column, no soft-delete flag, and no recovery path — once confirmed, a deleted hero is
-gone, and immediately stops appearing in any list, search, or direct lookup (`404`).
-Deletion is only permitted for active heroes; an inactive hero must be reactivated before
-it can be deleted.
+A exclusão é um hard delete: a linha do banco é removida por completo. Não há coluna
+`deleted_at`, nem flag de soft-delete, nem caminho de recuperação — uma vez
+confirmado, um herói excluído desaparece e imediatamente para de aparecer em
+qualquer listagem, busca ou consulta direta (`404`). A exclusão só é permitida para
+heróis ativos; um herói inativo precisa ser reativado antes de poder ser excluído.
 
-## Trade-offs and decisions
+## Trade-offs e decisões
 
-- **No authentication.** Explicitly out of scope for this assessment; all endpoints are
-  open. Not appropriate as-is for a real deployment.
-- **One repository abstraction, nothing more.** Use-case objects, mappers, and similar
-  layers were deliberately not added — they'd have no concrete problem to solve at this
-  scale, and would just be indirection to explain.
-- **No optimistic UI updates.** Mutations wait for the server response before reflecting
-  a change; simpler to reason about, at the cost of a small perceived-latency difference
-  for a fast local database.
-- **Client-side validation does not replicate every server rule.** In particular, the
-  avatar URL's "resolves to a loadable image" check only happens server-side (it requires
-  a network fetch); the client validates format/required-ness for fast feedback, but the
-  server remains the source of truth.
-- **Single shared dev database for backend integration tests.** Integration tests run
-  against the same local MySQL instance used for manual testing (clearing hero rows
-  between tests), rather than a dedicated test database/container. Adequate at this scale;
-  would need isolation for a larger or CI-shared environment.
-- **No API versioning or rate limiting.** Not required for a single-consumer, unauthenticated,
-  small-scope assessment app.
+- **Sem autenticação.** Explicitamente fora do escopo; todos os endpoints estão
+  abertos. Não é adequado, como está, para um deploy real.
+- **Uma única abstração de repositório, nada além disso.** Objetos de caso de uso,
+  mappers e camadas semelhantes foram deliberadamente não adicionados — eles não
+  teriam problema concreto a resolver nessa escala, e seriam só indireção a explicar.
+- **Sem atualizações otimistas na UI.** Mutações esperam a resposta do servidor
+  antes de refletir uma mudança; mais simples de raciocinar, ao custo de uma
+  pequena diferença de latência percebida num banco local rápido.
+- **A validação no cliente não replica todas as regras do servidor.** Em
+  particular, a verificação "a URL do avatar resolve pra uma imagem carregável" só
+  acontece no servidor (exige uma requisição de rede); o cliente valida
+  formato/obrigatoriedade pra feedback rápido, mas o servidor continua sendo a
+  fonte da verdade.
+- **Banco de dev único compartilhado pelos testes de integração do backend.** Os
+  testes de integração rodam contra a mesma instância local do MySQL usada pra
+  teste manual (limpando as linhas de heróis entre os testes), em vez de um
+  banco/container de teste dedicado. Adequado nessa escala; precisaria de
+  isolamento pra um ambiente maior ou compartilhado em CI.
+- **Sem versionamento de API ou rate limiting.** Não necessário para uma aplicação
+  de avaliação pequena, sem autenticação e com um único consumidor.
 
-## Possible future improvements
+## Possíveis melhorias futuras
 
-- Authentication/authorization (e.g. per-user hero ownership).
-- Optimistic UI updates for mutations, with rollback on failure.
-- Code-splitting the frontend bundle (currently a single ~500 KB chunk — fine at this
-  scale, but would matter for a larger app).
-- A dedicated test database/container, isolated from local manual-testing data.
-- Bulk operations (bulk deactivate/delete) and CSV import/export.
-- Search beyond simple substring matching (e.g. fuzzy matching, multi-field ranking).
-- API rate limiting and structured request logging/observability.
+- Autenticação/autorização (ex.: posse de herói por usuário).
+- Atualizações otimistas na UI para mutações, com rollback em caso de falha.
+- Code-splitting do bundle do frontend (atualmente um único chunk de ~500 KB — ok
+  nessa escala, mas importaria numa aplicação maior).
+- Um banco/container de teste dedicado, isolado dos dados de teste manual local.
+- Operações em lote (desativar/excluir em massa) e importação/exportação CSV.
+- Busca além de correspondência simples de substring (ex.: fuzzy matching,
+  ranqueamento multi-campo).
+- Rate limiting de API e logging/observabilidade estruturados de requisições.

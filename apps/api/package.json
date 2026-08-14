@@ -12,7 +12,7 @@
     "prisma:generate": "prisma generate",
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed --"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

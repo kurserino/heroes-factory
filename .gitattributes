@@ -1,0 +1,3 @@
+# Spec-kit tooling scripts/templates — not project code, exclude from GitHub's
+# language stats.
+.specify/** linguist-vendored

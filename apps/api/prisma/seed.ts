@@ -15,19 +15,18 @@ function parseCount(): number {
 }
 
 async function main(): Promise<void> {
-  const requestedCount = parseCount();
-  const count = Math.min(requestedCount, heroes.length);
+  const count = parseCount();
 
-  if (requestedCount > heroes.length) {
+  if (count > heroes.length) {
     console.warn(
-      `Requested ${requestedCount} heroes, but the cached dataset only has ${heroes.length}. Seeding ${count}.`,
+      `Requested ${count} heroes, but the cached dataset only has ${heroes.length}. Cycling through the dataset to reach ${count}.`,
     );
   }
 
-  const data = heroes.slice(0, count).map((hero) => ({
-    ...hero,
-    date_of_birth: new Date(hero.date_of_birth),
-  }));
+  const data = Array.from({ length: count }, (_, i) => {
+    const hero = heroes[i % heroes.length];
+    return { ...hero, date_of_birth: new Date(hero.date_of_birth) };
+  });
   await prisma.hero.createMany({ data });
   console.log(`Seeded ${count} heroes.`);
 }
