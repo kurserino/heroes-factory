@@ -4,6 +4,7 @@
     "target": "ES2021",
     "lib": ["ES2021"],
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Ray Terrill",
+    "nickname": "Ray",
+    "date_of_birth": "1988-11-27",
+    "universe": "DC Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/543-ray.jpg"
+  },
+  {
+    "name": "Annihilus",
+    "nickname": "Annihilus",
+    "date_of_birth": "1953-10-28",
+    "universe": "Marvel Comics",
+    "main_power": "Super Strength",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/29-annihilus.jpg"
+  },
+  {
+    "name": "Sam Wilson",
+    "nickname": "Falcon",
+    "date_of_birth": "1945-06-26",
+    "universe": "Marvel Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/251-falcon.jpg"
+  },
+  {
+    "name": "Faora Hu-Ul",
+    "nickname": "Faora",
+    "date_of_birth": "1960-11-22",
+    "universe": "DC Comics",
+    "main_power": "Enhanced Durability",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/253-faora.jpg"
+  },
+  {
+    "name": "Peter Jason Quill",
+    "nickname": "Star-Lord",
+    "date_of_birth": "2003-12-16",
+    "universe": "Marvel Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/630-star-lord.jpg"
+  },
+  {
+    "name": "J'onn J'onzz",
+    "nickname": "Martian Manhunter",
+    "date_of_birth": "2001-06-20",
+    "universe": "DC Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/432-martian-manhunter.jpg"
+  },
+  {
+    "name": "Grodd",
+    "nickname": "Gorilla Grodd",
+    "date_of_birth": "1960-05-14",
+    "universe": "DC Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/294-gorilla-grodd.jpg"
+  },
+  {
+    "name": "Frederick J. Dukes",
+    "nickname": "Blob",
+    "date_of_birth": "1974-11-26",
+    "universe": "Marvel Comics",
+    "main_power": "Enhanced Durability",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/119-blob.jpg"
+  },
+  {
+    "name": "Mortimer Toynbee",
+    "nickname": "Toad",
+    "date_of_birth": "1966-08-10",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/670-toad.jpg"
+  },
+  {
+    "name": "Matt Murdock",
+    "nickname": "Daredevil",
+    "date_of_birth": "1964-10-02",
+    "universe": "Marvel Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/201-daredevil.jpg"
+  },
+  {
+    "name": "Nathan Heywood",
+    "nickname": "Citizen Steel",
+    "date_of_birth": "1943-01-23",
+    "universe": "DC Comics",
+    "main_power": "Enhanced Durability",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/177-citizen-steel.jpg"
+  },
+  {
+    "name": "Zebediah Killgrave",
+    "nickname": "Purple Man",
+    "date_of_birth": "1965-10-05",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/531-purple-man.jpg"
+  },
+  {
+    "name": "Kitty Pryde",
+    "nickname": "Shadowcat",
+    "date_of_birth": "1999-03-25",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/586-shadowcat.jpg"
+  },
+  {
+    "name": "Hal Jordan",
+    "nickname": "Hal Jordan",
+    "date_of_birth": "1995-02-11",
+    "universe": "DC Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/306-hal-jordan.jpg"
+  },
+  {
+    "name": "Madelyne Jennifer Pryor",
+    "nickname": "Goblin Queen",
+    "date_of_birth": "1937-02-27",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/286-goblin-queen.jpg"
+  },
+  {
+    "name": "Ymir",
+    "nickname": "Ymir",
+    "date_of_birth": "1994-12-03",
+    "universe": "Marvel Comics",
+    "main_power": "Super Strength",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/728-ymir.jpg"
+  },
+  {
+    "name": "Pyreus Kril",
+    "nickname": "Firelord",
+    "date_of_birth": "1979-07-16",
+    "universe": "Marvel Comics",
+    "main_power": "Enhanced Durability",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/258-firelord.jpg"
+  },
+  {
+    "name": "John Wraith",
+    "nickname": "John Wraith",
+    "date_of_birth": "1946-11-15",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/no-portrait.jpg"
+  },
+  {
+    "name": "Natasha Romanoff",
+    "nickname": "Black Widow",
+    "date_of_birth": "1995-02-01",
+    "universe": "Marvel Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/107-black-widow.jpg"
+  },
+  {
+    "name": "J'son",
+    "nickname": "Mister Knife",
+    "date_of_birth": "1966-04-05",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/458-mister-knife.jpg"
+  },
+  {
+    "name": "David Reid",
+    "nickname": "Magog",
+    "date_of_birth": "1986-04-01",
+    "universe": "DC Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/424-magog.jpg"
+  },
+  {
+    "name": "Christopher Powell",
+    "nickname": "Darkhawk",
+    "date_of_birth": "1984-05-26",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/202-darkhawk.jpg"
+  },
+  {
+    "name": "Orin",
+    "nickname": "Aquaman",
+    "date_of_birth": "1991-10-13",
+    "universe": "DC Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/38-aquaman.jpg"
+  },
+  {
+    "name": "Philippa Sontag",
+    "nickname": "Arclight",
+    "date_of_birth": "1937-01-13",
+    "universe": "Marvel Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/41-arclight.jpg"
+  },
+  {
+    "name": "Violet Parr",
+    "nickname": "Violet Parr",
+    "date_of_birth": "1983-06-03",
+    "universe": "Dark Horse Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/696-violet-parr.jpg"
+  },
+  {
+    "name": "Burchell Clemens",
+    "nickname": "Cottonmouth",
+    "date_of_birth": "2002-05-15",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/188-cottonmouth.jpg"
+  },
+  {
+    "name": "Nathan Summers",
+    "nickname": "Cable",
+    "date_of_birth": "1951-10-17",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/145-cable.jpg"
+  },
+  {
+    "name": "Victor Fries",
+    "nickname": "Mister Freeze",
+    "date_of_birth": "1981-10-13",
+    "universe": "DC Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/457-mister-freeze.jpg"
+  },
+  {
+    "name": "Jean-Paul Beaubier",
+    "nickname": "Northstar",
+    "date_of_birth": "1957-06-18",
+    "universe": "Marvel Comics",
+    "main_power": "Superhuman Speed",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/495-northstar.jpg"
+  },
+  {
+    "name": "William Tockman",
+    "nickname": "Clock King",
+    "date_of_birth": "1990-07-28",
+    "universe": "DC Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/181-clock-king.jpg"
+  },
+  {
+    "name": "George Tarleton",
+    "nickname": "MODOK",
+    "date_of_birth": "1947-02-28",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/463-modok.jpg"
+  },
+  {
+    "name": "Ray Palmer",
+    "nickname": "Atom II",
+    "date_of_birth": "1996-10-28",
+    "universe": "DC Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/53-atom-ii.jpg"
+  },
+  {
+    "name": "Harley Quinn",
+    "nickname": "Harley Quinn",
+    "date_of_birth": "1947-09-09",
+    "universe": "DC Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/309-harley-quinn.jpg"
+  },
+  {
+    "name": "Frederick Foswell",
+    "nickname": "Big Man",
+    "date_of_birth": "2002-08-30",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/83-big-man.jpg"
+  },
+  {
+    "name": "Elaine Coll",
+    "nickname": "Scorpia",
+    "date_of_birth": "1978-08-06",
+    "universe": "Marvel Comics",
+    "main_power": "Superhuman Speed",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/580-scorpia.jpg"
+  },
+  {
+    "name": "Harold Osborn",
+    "nickname": "Green Goblin II",
+    "date_of_birth": "1949-03-04",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/300-green-goblin-ii.jpg"
+  },
+  {
+    "name": "Sean Cassidy",
+    "nickname": "Banshee",
+    "date_of_birth": "1961-08-04",
+    "universe": "Marvel Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/61-banshee.jpg"
+  },
+  {
+    "name": "Namor McKenzie",
+    "nickname": "Namor",
+    "date_of_birth": "1971-11-22",
+    "universe": "Marvel Comics",
+    "main_power": "Super Strength",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/481-namor.jpg"
+  },
+  {
+    "name": "Oliver Queen",
+    "nickname": "Green Arrow",
+    "date_of_birth": "1962-08-15",
+    "universe": "DC Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/298-green-arrow.jpg"
+  },
+  {
+    "name": "Anung Un Rama",
+    "nickname": "Hellboy",
+    "date_of_birth": "1997-06-18",
+    "universe": "Dark Horse Comics",
+    "main_power": "Enhanced Durability",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/322-hellboy.jpg"
+  },
+  {
+    "name": "Samuel Smithers",
+    "nickname": "Plantman",
+    "date_of_birth": "1937-04-04",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/518-plantman.jpg"
+  },
+  {
+    "name": "Cassandra Cain",
+    "nickname": "Batgirl IV",
+    "date_of_birth": "1998-04-21",
+    "universe": "DC Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/66-batgirl-iv.jpg"
+  },
+  {
+    "name": "Laynia Petrovna",
+    "nickname": "Darkstar",
+    "date_of_birth": "1948-11-26",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/206-darkstar.jpg"
+  },
+  {
+    "name": "Maxwell Dillon",
+    "nickname": "Electro",
+    "date_of_birth": "1985-09-28",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/237-electro.jpg"
+  },
+  {
+    "name": "Querl Dox",
+    "nickname": "Brainiac 5",
+    "date_of_birth": "1980-01-20",
+    "universe": "DC Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/137-brainiac-5.jpg"
+  },
+  {
+    "name": "Laurel Lance",
+    "nickname": "Black Canary",
+    "date_of_birth": "1954-08-18",
+    "universe": "DC Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/97-black-canary.jpg"
+  },
+  {
+    "name": "Reed Richards",
+    "nickname": "Mister Fantastic",
+    "date_of_birth": "1935-05-28",
+    "universe": "Marvel Comics",
+    "main_power": "Genius-Level Intellect",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/456-mister-fantastic.jpg"
+  },
+  {
+    "name": "John Proudstar",
+    "nickname": "Thunderbird",
+    "date_of_birth": "1943-09-20",
+    "universe": "Marvel Comics",
+    "main_power": "Master Combatant",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/661-thunderbird.jpg"
+  },
+  {
+    "name": "Ultron",
+    "nickname": "Ultron",
+    "date_of_birth": "1997-10-21",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/680-ultron.jpg"
+  },
+  {
+    "name": "Alexander Summers",
+    "nickname": "Havok",
+    "date_of_birth": "2003-10-24",
+    "universe": "Marvel Comics",
+    "main_power": "Energy Projection",
+    "avatar_url": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/311-havok.jpg"
+  }
+]
