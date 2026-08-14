@@ -230,12 +230,12 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Independent Test**: Open the create action, submit valid data, confirm the hero appears active and newest-first; submit invalid data and confirm values are preserved with a clear error.
 
-- [ ] T078 [US2] Create `apps/web/src/features/heroes/schemas/heroFormSchema.ts` (Zod schema for the 6 creatable/editable fields)
-- [ ] T079 [US2] Create `apps/web/src/features/heroes/components/HeroFormDialog.tsx` (shared create/edit MUI `Dialog` using React Hook Form + `zodResolver`; not dismissible while a submission is pending, per FR-015a)
-- [ ] T080 [US2] Wire create mode of `HeroFormDialog` to `useCreateHeroMutation`: loading state on submit, success/error feedback, entered values preserved on failure (FR-019)
-- [ ] T081 [US2] Add a "Create Hero" action to the main screen in `apps/web/src/app/App.tsx`, opening `HeroFormDialog` in create mode
+- [X] T078 [US2] Create `apps/web/src/features/heroes/schemas/heroFormSchema.ts` (Zod schema for the 6 creatable/editable fields)
+- [X] T079 [US2] Create `apps/web/src/features/heroes/components/HeroFormDialog.tsx` (shared create/edit MUI `Dialog` using React Hook Form + `zodResolver`; not dismissible while a submission is pending, per FR-015a)
+- [X] T080 [US2] Wire create mode of `HeroFormDialog` to `useCreateHeroMutation`: loading state on submit, success/error feedback, entered values preserved on failure (FR-019)
+- [X] T081 [US2] Add a "Create Hero" action — placed in `apps/web/src/features/heroes/components/HeroList.tsx` next to the search bar rather than directly in `apps/web/src/app/App.tsx`, since `HeroList` (not `App`) already owns the rest of the main-screen layout (search, pagination, states); opens `HeroFormDialog` in create mode
 
-**Checkpoint**: US2 fully functional and independently demoable.
+**Checkpoint**: US2 fully functional and independently demoable. **Verified**: manually exercised in a real browser — created a hero, saw success feedback, dialog closed, card appeared active.
 
 ---
 
@@ -245,10 +245,10 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Independent Test**: Open an active hero's Edit action, change a field, submit, and confirm the update is reflected; confirm no Edit action exists for inactive heroes.
 
-- [ ] T082 [US3] Wire edit mode of `HeroFormDialog` (pre-filled from the selected hero; non-editable fields shown read-only) to `useUpdateHeroMutation`, with loading/success/error feedback and value preservation on failure
-- [ ] T083 [US3] Create `apps/web/src/features/heroes/components/HeroActions.tsx` rendering an Edit action (opens `HeroFormDialog` in edit mode) only when the hero is active
+- [X] T082 [US3] Wire edit mode of `HeroFormDialog` (pre-filled from the selected hero; non-editable fields — status, created — shown read-only) to `useUpdateHeroMutation`, with loading/success/error feedback and value preservation on failure
+- [X] T083 [US3] Create `apps/web/src/features/heroes/components/HeroActions.tsx` rendering an Edit action (opens `HeroFormDialog` in edit mode) only when the hero is active
 
-**Checkpoint**: US3 fully functional and independently demoable.
+**Checkpoint**: US3 fully functional and independently demoable. **Verified**: manually exercised in a real browser — edited an active hero's main power, saw success feedback and the updated value persist.
 
 ---
 
@@ -258,11 +258,11 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Independent Test**: Toggle an active hero off (with confirmation), see it turn gray with only the toggle available; toggle it back on (with confirmation) and see full actions return.
 
-- [ ] T084 [US4] Create `apps/web/src/features/heroes/components/StatusConfirmDialog.tsx` (MUI `Dialog` confirming activate/deactivate before persisting)
-- [ ] T085 [US4] Create `apps/web/src/features/heroes/components/HeroStatusToggle.tsx` (MUI `Switch` opening `StatusConfirmDialog`; on confirm, calls `useUpdateHeroStatusMutation`; disabled while a change is pending, per FR-015)
-- [ ] T086 [US4] Wire `HeroStatusToggle` into `HeroActions` for both active and inactive heroes in `apps/web/src/features/heroes/components/HeroActions.tsx`
+- [X] T084 [US4] Create `apps/web/src/features/heroes/components/StatusConfirmDialog.tsx` (MUI `Dialog` confirming activate/deactivate before persisting)
+- [X] T085 [US4] Create `apps/web/src/features/heroes/components/HeroStatusToggle.tsx` (MUI `Switch` opening `StatusConfirmDialog`; on confirm, calls `useUpdateHeroStatusMutation`; disabled while a change is pending, per FR-015)
+- [X] T086 [US4] Wire `HeroStatusToggle` into `HeroActions` for both active and inactive heroes in `apps/web/src/features/heroes/components/HeroActions.tsx`
 
-**Checkpoint**: US4 fully functional and independently demoable.
+**Checkpoint**: US4 fully functional and independently demoable. **Verified**: manually exercised in a real browser — deactivate (with confirmation) grayed the card and hid Edit/Delete; reactivate (with confirmation) restored them.
 
 ---
 
@@ -272,10 +272,10 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Independent Test**: Trigger Delete on an active hero, confirm, and see it disappear from the list at every page/search result; confirm no Delete action exists for inactive heroes.
 
-- [ ] T087 [US5] Create `apps/web/src/features/heroes/components/DeleteConfirmDialog.tsx` (MUI `Dialog` confirming permanent deletion before persisting)
-- [ ] T088 [US5] Add a Delete action to `apps/web/src/features/heroes/components/HeroActions.tsx`, rendered only for active heroes, wired to `DeleteConfirmDialog` then `useDeleteHeroMutation`
+- [X] T087 [US5] Create `apps/web/src/features/heroes/components/DeleteConfirmDialog.tsx` (MUI `Dialog` confirming permanent deletion before persisting)
+- [X] T088 [US5] Add a Delete action to `apps/web/src/features/heroes/components/HeroActions.tsx`, rendered only for active heroes, wired to `DeleteConfirmDialog` then `useDeleteHeroMutation`
 
-**Checkpoint**: US5 fully functional and independently demoable — all five user stories now complete.
+**Checkpoint**: US5 fully functional and independently demoable — all five user stories now complete. **Verified**: manually exercised in a real browser — deleted an active hero (with confirmation), saw success feedback, hero disappeared and list fell back to the empty state.
 
 ---
 
@@ -283,11 +283,11 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Ensure FR-015/FR-017/FR-018 and the pagination clarification are satisfied uniformly across all flows, not just per-story.
 
-- [ ] T089 Add pending/disabled-button states to every mutation-triggering control (`HeroFormDialog`, `HeroStatusToggle`, `DeleteConfirmDialog`) to guarantee duplicate-submission prevention and visible loading feedback everywhere (FR-015, FR-017)
-- [ ] T090 Create `apps/web/src/components/ui/FeedbackSnackbar.tsx` (shared success/error feedback surface) and wire it into the create/edit/status/delete flows (FR-018)
-- [ ] T091 [US1] Implement the pagination auto-navigate-back-on-empty-page behavior in `apps/web/src/features/heroes/hooks/useHeroListParams.ts` (triggered after delete/deactivate mutations empty the current page)
+- [X] T089 Add pending/disabled-button states to every mutation-triggering control (`HeroFormDialog`, `HeroStatusToggle`, `DeleteConfirmDialog`) to guarantee duplicate-submission prevention and visible loading feedback everywhere (FR-015, FR-017)
+- [X] T090 Create `apps/web/src/components/ui/FeedbackSnackbar.tsx` (shared success/error feedback surface) and wire it into the create/edit/status/delete flows (FR-018) — a single snackbar instance is owned by `HeroList` and shared across all four flows, rather than one per dialog, to avoid stacked/duplicate notifications
+- [X] T091 [US1] Implement the pagination auto-navigate-back-on-empty-page behavior in `apps/web/src/features/heroes/components/HeroList.tsx` (deviates from the file named in the original task — implemented as a `useEffect` reacting to `data.pagination.totalPages` in `HeroList` rather than inside `useHeroListParams`, since the hook has no visibility into query results; generically handles any mutation that shrinks `totalPages` below the current `page`, not only delete/deactivate)
 
-**Checkpoint**: SC-003 and SC-006 (feedback and list-freshness success criteria) hold across every operation.
+**Checkpoint**: SC-003 and SC-006 (feedback and list-freshness success criteria) hold across every operation. Not separately re-verified with a live emptied-page scenario in this session (would require seeding 11+ heroes); the underlying `useEffect` logic was type-checked and reviewed, and its precondition (`totalPages > 0 && page > totalPages`) is deliberately narrow so it cannot fire on the legitimate zero-results search state.
 
 ---
 
@@ -300,14 +300,14 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 - [X] T094 [P] [US1] Write test in `HeroList.test.tsx`: shows the API-error state when the list query fails
 - [X] T095 [P] [US1] Write test covering: submitting a search updates results, and a non-matching term shows the no-results state — split across `HeroSearch.test.tsx` (submit-triggering behavior) and `HeroList.test.tsx` (the resulting no-results UI + correct query args)
 - [X] T096 [P] [US1] Write `apps/web/src/features/heroes/components/HeroPagination.test.tsx` test: changing page requests the correct page
-- [X] T097 [P] [US1] Write test: `HeroCard` renders inactive heroes with gray/inactive presentation — the "without Edit/Delete actions" half is deferred: those actions don't exist in the UI at all yet (they're introduced in Phases 15/17), so there is nothing to assert their absence against until then
-- [ ] T098 [P] [US4] Write `apps/web/src/features/heroes/components/HeroStatusToggle.test.tsx` test: toggling requires confirmation before the mutation fires
-- [ ] T099 [P] [US5] Write `apps/web/src/features/heroes/components/DeleteConfirmDialog.test.tsx` test: deleting requires confirmation before the mutation fires
-- [ ] T100 [P] [US2] Write `apps/web/src/features/heroes/components/HeroFormDialog.test.tsx` test: invalid submission shows validation errors and preserves entered values
-- [ ] T101 [P] [US2] Write test in `HeroFormDialog.test.tsx`: successful create submission shows success feedback and closes the dialog
-- [ ] T102 [P] [US3] Write test in `HeroFormDialog.test.tsx`: failed edit submission shows error feedback and keeps entered values in the form
+- [X] T097 [P] [US1] Write test: `HeroCard` renders inactive heroes with gray/inactive presentation and without Edit/Delete actions — the "without Edit/Delete actions" half, deferred when this task was first completed (those actions didn't exist yet), is now closed: `HeroCard.test.tsx` was extended this phase to assert both actions are absent for an inactive hero and present for an active one
+- [X] T098 [P] [US4] Write `apps/web/src/features/heroes/components/HeroStatusToggle.test.tsx` test: toggling requires confirmation before the mutation fires (plus a companion test that canceling the confirmation never calls the mutation)
+- [X] T099 [P] [US5] Write `apps/web/src/features/heroes/components/DeleteConfirmDialog.test.tsx` test: deleting requires confirmation before the mutation fires — exercised via `HeroActions` (which owns the delete mutation) since `DeleteConfirmDialog` itself is purely presentational; plus a companion cancel test
+- [X] T100 [P] [US2] Write `apps/web/src/features/heroes/components/HeroFormDialog.test.tsx` test: invalid submission shows validation errors and preserves entered values
+- [X] T101 [P] [US2] Write test in `HeroFormDialog.test.tsx`: successful create submission shows success feedback and closes the dialog
+- [X] T102 [P] [US3] Write test in `HeroFormDialog.test.tsx`: failed edit submission shows error feedback and keeps entered values in the form (plus a companion failed-create test for the same behavior)
 
-**Checkpoint**: `npm run test --workspace apps/web` passes, covering every priority listed in plan.md's frontend testing section.
+**Checkpoint**: `npm run test --workspace apps/web` passes, covering every priority listed in plan.md's frontend testing section — **verified**: 18/18 frontend tests passing across 7 test files.
 
 ---
 

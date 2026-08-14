@@ -1,12 +1,16 @@
 import { Avatar, Card, CardActionArea, CardContent, Typography } from '@mui/material';
 import { Hero } from '../types/hero';
+import { HeroActions } from './HeroActions';
 
 interface HeroCardProps {
   hero: Hero;
   onSelect: (hero: Hero) => void;
+  onEdit: (hero: Hero) => void;
+  onActionSuccess: (message: string) => void;
+  onActionError: (message: string) => void;
 }
 
-export function HeroCard({ hero, onSelect }: HeroCardProps) {
+export function HeroCard({ hero, onSelect, onEdit, onActionSuccess, onActionError }: HeroCardProps) {
   return (
     <Card
       variant="outlined"
@@ -34,6 +38,7 @@ export function HeroCard({ hero, onSelect }: HeroCardProps) {
           )}
         </CardContent>
       </CardActionArea>
+      <HeroActions hero={hero} onEdit={onEdit} onSuccess={onActionSuccess} onError={onActionError} />
     </Card>
   );
 }
