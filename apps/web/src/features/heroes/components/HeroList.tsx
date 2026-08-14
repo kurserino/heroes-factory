@@ -8,12 +8,7 @@ import { Hero } from '../types/hero';
 import { HeroCard } from './HeroCard';
 import { HeroDetailsDialog } from './HeroDetailsDialog';
 import { HeroFormDialog, HeroFormMode } from './HeroFormDialog';
-import {
-  HeroListEmpty,
-  HeroListError,
-  HeroListLoading,
-  HeroListNoResults,
-} from './HeroListStates';
+import { HeroListEmpty, HeroListError, HeroListLoading, HeroListNoResults } from './HeroListStates';
 import { HeroPagination } from './HeroPagination';
 import { HeroSearch } from './HeroSearch';
 
@@ -42,29 +37,32 @@ export function HeroList() {
   }
 
   return (
-    <Stack spacing={3}>
-      <Stack direction="row" spacing={2} alignItems="flex-start">
-        <Box flexGrow={1}>
-          <HeroSearch initialValue={search} onSubmit={submitSearch} />
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setFormState({ type: 'create' })}
-        >
-          Create Hero
-        </Button>
-      </Stack>
+    <Box display="flex" flexDirection="column" flexGrow={1}>
+      <Stack spacing={3}>
+        <Stack direction="row" spacing={2} alignItems="flex-start">
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setFormState({ type: 'create' })}
+            sx={{ flexShrink: 0, borderRadius: 999 }}
+          >
+            Create
+          </Button>
+          <Box flexGrow={1}>
+            <HeroSearch initialValue={search} onSubmit={submitSearch} />
+          </Box>
+        </Stack>
 
-      {isPending && <HeroListLoading />}
-      {!isPending && isError && <HeroListError />}
+        {isPending && <HeroListLoading />}
+        {!isPending && isError && <HeroListError />}
 
-      {!isPending && !isError && data && data.data.length === 0 && (
-        search ? <HeroListNoResults search={search} /> : <HeroListEmpty />
-      )}
+        {!isPending &&
+          !isError &&
+          data &&
+          data.data.length === 0 &&
+          (search ? <HeroListNoResults search={search} /> : <HeroListEmpty />)}
 
-      {!isPending && !isError && data && data.data.length > 0 && (
-        <>
+        {!isPending && !isError && data && data.data.length > 0 && (
           <Box
             sx={{
               display: 'grid',
@@ -88,10 +86,13 @@ export function HeroList() {
               />
             ))}
           </Box>
-          <Box display="flex" justifyContent="center">
-            <HeroPagination pagination={data.pagination} onPageChange={setPage} />
-          </Box>
-        </>
+        )}
+      </Stack>
+
+      {!isPending && !isError && data && data.data.length > 0 && (
+        <Box display="flex" justifyContent="flex-end" sx={{ mt: 'auto', pt: 3 }}>
+          <HeroPagination pagination={data.pagination} onPageChange={setPage} />
+        </Box>
       )}
 
       <HeroDetailsDialog hero={selectedHero} onClose={() => setSelectedHero(null)} />
@@ -102,6 +103,6 @@ export function HeroList() {
         onError={handleError}
       />
       <FeedbackSnackbar message={feedback} onClose={() => setFeedback(null)} />
-    </Stack>
+    </Box>
   );
 }

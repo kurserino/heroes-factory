@@ -51,10 +51,7 @@ export class PrismaHeroesRepository implements HeroesRepository {
   async findMany({ page, search }: ListHeroesParams): Promise<ListHeroesResult> {
     const where = search
       ? {
-          OR: [
-            { name: { contains: search } },
-            { nickname: { contains: search } },
-          ],
+          OR: [{ name: { contains: search } }, { nickname: { contains: search } }],
         }
       : {};
 
@@ -84,16 +81,10 @@ export class PrismaHeroesRepository implements HeroesRepository {
       data: {
         ...(data.name !== undefined ? { name: data.name } : {}),
         ...(data.nickname !== undefined ? { nickname: data.nickname } : {}),
-        ...(data.date_of_birth !== undefined
-          ? { date_of_birth: toDate(data.date_of_birth) }
-          : {}),
+        ...(data.date_of_birth !== undefined ? { date_of_birth: toDate(data.date_of_birth) } : {}),
         ...(data.universe !== undefined ? { universe: data.universe } : {}),
-        ...(data.main_power !== undefined
-          ? { main_power: data.main_power }
-          : {}),
-        ...(data.avatar_url !== undefined
-          ? { avatar_url: data.avatar_url }
-          : {}),
+        ...(data.main_power !== undefined ? { main_power: data.main_power } : {}),
+        ...(data.avatar_url !== undefined ? { avatar_url: data.avatar_url } : {}),
       },
     });
     return toEntity(record);

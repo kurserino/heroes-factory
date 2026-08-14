@@ -1,5 +1,5 @@
 import SearchIcon from '@mui/icons-material/Search';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { Button, InputAdornment, Stack, TextField } from '@mui/material';
 import { FormEvent, useState } from 'react';
 
 interface HeroSearchProps {
@@ -7,8 +7,10 @@ interface HeroSearchProps {
   onSubmit: (value: string) => void;
 }
 
-// Explicit submit only (Enter key or the search button) — no live-as-you-type
-// filtering, per the spec's clarification session.
+// Explicit submit only (Enter key or the Search button) — no live-as-you-type
+// filtering, per the spec's clarification session. The magnifying-glass icon
+// inside the input is purely illustrative; the actual submit trigger is the
+// Search button outside the input.
 export function HeroSearch({ initialValue, onSubmit }: HeroSearchProps) {
   const [value, setValue] = useState(initialValue);
 
@@ -18,24 +20,30 @@ export function HeroSearch({ initialValue, onSubmit }: HeroSearchProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} role="search">
+    <Stack component="form" direction="row" spacing={1} onSubmit={handleSubmit} role="search">
       <TextField
-        label="Search heroes"
         placeholder="Search by name or nickname"
         value={value}
         onChange={(event) => setValue(event.target.value)}
         size="small"
         fullWidth
+        sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}
         InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton type="submit" aria-label="Search">
-                <SearchIcon />
-              </IconButton>
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon fontSize="small" color="action" />
             </InputAdornment>
           ),
         }}
+        inputProps={{ 'aria-label': 'Search heroes' }}
       />
-    </form>
+      <Button
+        type="submit"
+        variant="outlined"
+        sx={{ bgcolor: 'background.paper', borderRadius: 999 }}
+      >
+        Search
+      </Button>
+    </Stack>
   );
 }

@@ -59,8 +59,9 @@ export const HeroStatusToggle = forwardRef<HTMLLIElement, HeroStatusToggleProps>
 
     return (
       <>
-        <MenuItem ref={ref} disabled={mutation.isPending}>
+        <MenuItem ref={ref} disabled={mutation.isPending} sx={{ justifyContent: 'center' }}>
           <Switch
+            size="small"
             checked={hero.is_active}
             onChange={requestChange}
             disabled={mutation.isPending}

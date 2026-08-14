@@ -21,10 +21,7 @@ function toErrorMessage(body: ErrorBody): string {
   return Array.isArray(body.message) ? body.message.join(', ') : body.message;
 }
 
-async function request<TResponse>(
-  path: string,
-  init?: RequestInit,
-): Promise<TResponse> {
+async function request<TResponse>(path: string, init?: RequestInit): Promise<TResponse> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {

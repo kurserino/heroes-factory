@@ -52,7 +52,7 @@ describe('HeroList', () => {
 
     expect(screen.getByTestId('hero-list-loading')).toBeInTheDocument();
 
-    await waitFor(() => expect(screen.getByText('Peter Parker')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Spider-Man')).toBeInTheDocument());
     expect(screen.queryByTestId('hero-list-loading')).not.toBeInTheDocument();
   });
 

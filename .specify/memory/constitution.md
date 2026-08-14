@@ -1,27 +1,21 @@
 <!--
 Sync Impact Report
-Version change: [TEMPLATE] → 1.0.0 (initial ratification)
-Modified principles: N/A (first concrete adoption of the constitution)
+Version change: 1.0.0 → 1.1.0
+Modified principles: none (all 16 original principles unchanged)
 Added sections:
-  - Core Principles I–XVI (Proportional Architecture, TypeScript Strict Mode,
-    Pragmatic SOLID, Layered Separation of Concerns, Backend-Enforced Business
-    Rules, Consistent RESTful API Design, Version-Controlled Schema Migrations,
-    Risk-Prioritized Automated Testing, Explicit Async UI Feedback, Readable
-    Over Clever Code, Intentional Dependencies, No Committed Secrets,
-    Reproducible Local Development, English-Only Artifacts, Practical
-    Accessibility, Defensible Architectural Decisions)
-  - Technology & Environment Constraints
-  - Development Workflow & Quality Gates
-  - Governance
-Removed sections: none (scaffold placeholders only)
+  - Core Principle XVII (Consolidated Constants Files)
+Removed sections: none
+Rationale for MINOR bump: new principle added (materially expanded guidance),
+no existing principle redefined or removed.
 Templates requiring updates:
   - .specify/templates/plan-template.md — ⚠ pending manual review (verify
-    Constitution Check gates reference these 16 principles)
-  - .specify/templates/spec-template.md — ⚠ pending manual review (verify no
-    contradiction with backend-enforced business rules / testing priorities)
-  - .specify/templates/tasks-template.md — ⚠ pending manual review (verify
-    task categorization reflects migrations, tests, and API contract steps)
-Follow-up TODOs: none — all placeholders resolved from user-supplied input.
+    Constitution Check gates reference all 17 principles)
+  - .specify/templates/spec-template.md — no impact expected (coding-convention
+    principle, not spec-level)
+  - .specify/templates/tasks-template.md — ⚠ pending manual review (task
+    descriptions for new constants should reference the shared constants.ts
+    convention where applicable)
+Follow-up TODOs: none.
 -->
 
 # Heroes Factory Constitution
@@ -152,6 +146,18 @@ articulate the problem it solves and the trade-offs considered.
 **Rationale**: This project exists to demonstrate engineering judgment;
 decisions that cannot be explained and justified undermine that purpose.
 
+### XVII. Consolidated Constants Files
+Constants scoped to a component, feature, or folder MUST live in a single
+shared `constants.ts` file within that folder, imported by whichever files
+need them. Creating a new file named after an individual constant (e.g. a
+`menuItemHeight.ts` holding only `MENU_ITEM_HEIGHT`) is FORBIDDEN — related
+constants for that folder MUST be grouped into the one `constants.ts`
+instead, even if it currently holds a single value.
+**Rationale**: A predictable, singular location for a folder's constants is
+faster to find and extend than a proliferating set of one-export files, and
+avoids the file-per-symbol sprawl that undermines Principle X (Readable Over
+Clever Code) and Principle I (Proportional Architecture).
+
 ## Technology & Environment Constraints
 
 The backend and frontend MUST both use TypeScript in strict mode (Principle
@@ -187,4 +193,4 @@ MUST be checked against these principles before implementation begins, and
 any deviation MUST be explicitly justified in the relevant artifact (e.g. a
 plan's Complexity Tracking section) rather than silently introduced.
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-14 | **Last Amended**: 2026-08-14
+**Version**: 1.1.0 | **Ratified**: 2026-08-14 | **Last Amended**: 2026-08-14

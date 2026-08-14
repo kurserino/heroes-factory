@@ -12,7 +12,10 @@ export const heroFormSchema = z.object({
     .string()
     .min(1, 'Date of birth is required')
     .refine((value) => !Number.isNaN(new Date(value).getTime()), 'Invalid date')
-    .refine((value) => new Date(value).getTime() <= Date.now(), 'Date of birth cannot be in the future'),
+    .refine(
+      (value) => new Date(value).getTime() <= Date.now(),
+      'Date of birth cannot be in the future',
+    ),
   universe: z.string().trim().min(1, 'Universe is required').max(120),
   main_power: z.string().trim().min(1, 'Main power is required').max(200),
   avatar_url: z.string().trim().min(1, 'Avatar URL is required').url('Must be a valid URL'),

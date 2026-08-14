@@ -102,9 +102,9 @@ describe('HeroesService', () => {
     repository.heroes.set(inactiveHero.id, inactiveHero);
     const service = makeService(repository);
 
-    await expect(
-      service.update(inactiveHero.id, { name: 'New Name' }),
-    ).rejects.toBeInstanceOf(ConflictException);
+    await expect(service.update(inactiveHero.id, { name: 'New Name' })).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 
   it('remove() rejects when the target hero is inactive', async () => {
@@ -113,9 +113,7 @@ describe('HeroesService', () => {
     repository.heroes.set(inactiveHero.id, inactiveHero);
     const service = makeService(repository);
 
-    await expect(service.remove(inactiveHero.id)).rejects.toBeInstanceOf(
-      ConflictException,
-    );
+    await expect(service.remove(inactiveHero.id)).rejects.toBeInstanceOf(ConflictException);
   });
 
   it('updateStatus() activates an inactive hero', async () => {
@@ -142,8 +140,6 @@ describe('HeroesService', () => {
     expect(hero.nickname).toBe(activeHero.nickname);
     expect(hero.avatar_url).toBe(activeHero.avatar_url);
     expect(repository.updateCalls).toHaveLength(0);
-    expect(repository.updateStatusCalls).toEqual([
-      { id: activeHero.id, isActive: false },
-    ]);
+    expect(repository.updateStatusCalls).toEqual([{ id: activeHero.id, isActive: false }]);
   });
 });

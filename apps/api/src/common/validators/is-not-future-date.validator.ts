@@ -1,8 +1,4 @@
-import {
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
-} from 'class-validator';
+import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
 // A future date_of_birth is not a plausible value (data-model.md validation
 // rules); this is checked independently of @IsDateString's format check.

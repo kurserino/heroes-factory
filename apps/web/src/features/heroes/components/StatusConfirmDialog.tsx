@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
 
 interface StatusConfirmDialogProps {
   open: boolean;
@@ -25,8 +25,9 @@ export function StatusConfirmDialog({
       <DialogContent>
         Are you sure you want to {action} {heroName}?
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel} disabled={isPending}>
+      <Divider />
+      <DialogActions sx={{ justifyContent: 'center', px: 4, py: 3 }}>
+        <Button variant="outlined" onClick={onCancel} disabled={isPending}>
           Cancel
         </Button>
         <Button onClick={onConfirm} disabled={isPending} variant="contained">

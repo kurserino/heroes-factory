@@ -43,7 +43,11 @@ describe('HeroStatusToggle', () => {
     vi.mocked(updateHeroStatus).mockResolvedValue(makeHero({ is_active: false }));
 
     renderWithClient(
-      <HeroStatusToggle hero={makeHero({ is_active: true })} onSuccess={vi.fn()} onError={vi.fn()} />,
+      <HeroStatusToggle
+        hero={makeHero({ is_active: true })}
+        onSuccess={vi.fn()}
+        onError={vi.fn()}
+      />,
     );
 
     await user.click(screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }));
@@ -62,7 +66,11 @@ describe('HeroStatusToggle', () => {
     vi.mocked(updateHeroStatus).mockResolvedValue(makeHero());
 
     renderWithClient(
-      <HeroStatusToggle hero={makeHero({ is_active: true })} onSuccess={vi.fn()} onError={vi.fn()} />,
+      <HeroStatusToggle
+        hero={makeHero({ is_active: true })}
+        onSuccess={vi.fn()}
+        onError={vi.fn()}
+      />,
     );
 
     await user.click(screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }));

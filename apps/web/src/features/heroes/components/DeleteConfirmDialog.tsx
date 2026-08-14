@@ -1,4 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
+import { useRef } from 'react';
 import { Hero } from '../types/hero';
 
 interface DeleteConfirmDialogProps {
@@ -8,19 +9,31 @@ interface DeleteConfirmDialogProps {
   onCancel: () => void;
 }
 
-export function DeleteConfirmDialog({ hero, isPending, onConfirm, onCancel }: DeleteConfirmDialogProps) {
+export function DeleteConfirmDialog({
+  hero,
+  isPending,
+  onConfirm,
+  onCancel,
+}: DeleteConfirmDialogProps) {
+  // Keep showing the last hero while the dialog's closing transition plays,
+  // instead of the content blanking out the instant the parent clears it.
+  const lastHeroRef = useRef<Hero | null>(null);
+  if (hero !== null) {
+    lastHeroRef.current = hero;
+  }
+  const displayHero = hero ?? lastHeroRef.current;
+
   return (
     <Dialog open={hero !== null} onClose={isPending ? undefined : onCancel}>
       <DialogTitle>Permanently delete hero?</DialogTitle>
       <DialogContent>
-        {hero && (
-          <>
-            This will permanently delete {hero.name}. This action cannot be undone.
-          </>
+        {displayHero && (
+          <>This will permanently delete {displayHero.name}. This action cannot be undone.</>
         )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel} disabled={isPending}>
+      <Divider />
+      <DialogActions sx={{ justifyContent: 'center', px: 4, py: 3 }}>
+        <Button variant="outlined" onClick={onCancel} disabled={isPending}>
           Cancel
         </Button>
         <Button onClick={onConfirm} disabled={isPending} color="error" variant="contained">

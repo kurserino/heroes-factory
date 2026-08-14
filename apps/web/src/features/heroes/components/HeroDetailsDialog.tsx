@@ -1,8 +1,12 @@
 import {
   Avatar,
+  Box,
+  Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Stack,
   Typography,
@@ -17,12 +21,12 @@ interface HeroDetailsDialogProps {
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <Stack>
+    <Box flex={1}>
       <Typography variant="caption" color="text.secondary">
         {label}
       </Typography>
       <Typography variant="body1">{value}</Typography>
-    </Stack>
+    </Box>
   );
 }
 
@@ -33,31 +37,36 @@ export function HeroDetailsDialog({ hero, onClose }: HeroDetailsDialogProps) {
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       {hero && (
         <>
-          <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            Hero Details
+          <DialogTitle
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            {hero.nickname}
             <IconButton aria-label="Close" onClick={onClose} size="small">
               <CloseIcon />
             </IconButton>
           </DialogTitle>
+          <Divider />
           <DialogContent>
             <Stack spacing={2} py={1}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Avatar src={hero.avatar_url} alt={hero.name} sx={{ width: 72, height: 72 }} />
-                <Stack>
-                  <Typography variant="h6">{hero.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {hero.nickname}
-                  </Typography>
-                </Stack>
+              <Box display="flex" justifyContent="center">
+                <Avatar src={hero.avatar_url} alt={hero.name} sx={{ width: 96, height: 96 }} />
+              </Box>
+              <Stack direction="row" spacing={2}>
+                <Field label="Full name" value={hero.name} />
+                <Field label="Date of birth" value={hero.date_of_birth} />
               </Stack>
-              <Field label="Date of birth" value={hero.date_of_birth} />
-              <Field label="Universe" value={hero.universe} />
-              <Field label="Main power" value={hero.main_power} />
-              <Field label="Status" value={hero.is_active ? 'Active' : 'Inactive'} />
-              <Field label="Created" value={hero.created_at} />
-              <Field label="Last updated" value={hero.updated_at} />
+              <Stack direction="row" spacing={2}>
+                <Field label="Universe" value={hero.universe} />
+                <Field label="Main power" value={hero.main_power} />
+              </Stack>
             </Stack>
           </DialogContent>
+          <Divider />
+          <DialogActions sx={{ justifyContent: 'center', px: 4, py: 3 }}>
+            <Button variant="outlined" onClick={onClose}>
+              Close
+            </Button>
+          </DialogActions>
         </>
       )}
     </Dialog>

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "build": "nest build",
-    "dev": "nest start --watch",
+    "dev": "nest start --watch --preserveWatchOutput",
     "start": "node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
     "test": "jest --config ./test/jest-unit.config.js",

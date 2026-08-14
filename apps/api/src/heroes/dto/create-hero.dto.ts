@@ -1,10 +1,4 @@
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsString,
-  IsUrl,
-  MaxLength,
-} from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString, IsUrl, MaxLength } from 'class-validator';
 import { IsNotFutureDate } from '../../common/validators/is-not-future-date.validator';
 
 export class CreateHeroDto {

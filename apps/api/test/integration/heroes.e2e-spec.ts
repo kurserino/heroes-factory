@@ -10,9 +10,7 @@ class FakeAvatarUrlValidator extends AvatarUrlValidator {
   async assertLoadableImage(url: string): Promise<void> {
     if (url.includes('bad-image')) {
       const { BadRequestException } = await import('@nestjs/common');
-      throw new BadRequestException([
-        'avatar_url must resolve to a loadable image',
-      ]);
+      throw new BadRequestException(['avatar_url must resolve to a loadable image']);
     }
   }
 }
@@ -117,9 +115,7 @@ describe('Heroes API (e2e)', () => {
     await createHero({ name: 'Peter Parker', nickname: 'Spider-Man' });
     await createHero({ name: 'Bruce Wayne', nickname: 'Batman' });
 
-    const response = await request(app.getHttpServer())
-      .get('/heroes')
-      .query({ search: 'spider' });
+    const response = await request(app.getHttpServer()).get('/heroes').query({ search: 'spider' });
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
@@ -131,12 +127,8 @@ describe('Heroes API (e2e)', () => {
       await createHero({ name: `Hero ${i}`, nickname: `Nick ${i}` });
     }
 
-    const page1 = await request(app.getHttpServer())
-      .get('/heroes')
-      .query({ page: 1 });
-    const page2 = await request(app.getHttpServer())
-      .get('/heroes')
-      .query({ page: 2 });
+    const page1 = await request(app.getHttpServer()).get('/heroes').query({ page: 1 });
+    const page2 = await request(app.getHttpServer()).get('/heroes').query({ page: 2 });
 
     expect(page1.body.data).toHaveLength(10);
     expect(page1.body.pagination).toEqual({
@@ -189,14 +181,10 @@ describe('Heroes API (e2e)', () => {
   it('DELETE /heroes/:id removes an active hero; a subsequent GET returns 404', async () => {
     const created = await createHero();
 
-    const deleteResponse = await request(app.getHttpServer()).delete(
-      `/heroes/${created.body.id}`,
-    );
+    const deleteResponse = await request(app.getHttpServer()).delete(`/heroes/${created.body.id}`);
     expect(deleteResponse.status).toBe(204);
 
-    const getResponse = await request(app.getHttpServer()).get(
-      `/heroes/${created.body.id}`,
-    );
+    const getResponse = await request(app.getHttpServer()).get(`/heroes/${created.body.id}`);
     expect(getResponse.status).toBe(404);
   });
 
@@ -206,9 +194,7 @@ describe('Heroes API (e2e)', () => {
       .patch(`/heroes/${created.body.id}/status`)
       .send({ is_active: false });
 
-    const response = await request(app.getHttpServer()).delete(
-      `/heroes/${created.body.id}`,
-    );
+    const response = await request(app.getHttpServer()).delete(`/heroes/${created.body.id}`);
 
     expect(response.status).toBe(409);
   });

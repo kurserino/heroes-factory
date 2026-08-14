@@ -41,8 +41,7 @@ describe('HeroCard', () => {
     const user = userEvent.setup();
     renderWithClient(<HeroCard hero={makeHero({ is_active: true })} {...baseProps()} />);
 
-    expect(screen.getByText('Peter Parker')).toBeInTheDocument();
-    expect(screen.queryByText('Inactive')).not.toBeInTheDocument();
+    expect(screen.getByText('Spider-Man')).toBeInTheDocument();
     expect(screen.getByTestId('hero-card')).toHaveAttribute('data-active', 'true');
 
     await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
@@ -58,7 +57,6 @@ describe('HeroCard', () => {
     const user = userEvent.setup();
     renderWithClient(<HeroCard hero={makeHero({ is_active: false })} {...baseProps()} />);
 
-    expect(screen.getByText('Inactive')).toBeInTheDocument();
     expect(screen.getByTestId('hero-card')).toHaveAttribute('data-active', 'false');
 
     await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));

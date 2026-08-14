@@ -1,3 +1,5 @@
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -16,7 +18,11 @@ import { createHero, updateHero } from '../api/heroesApi';
 
 function renderWithClient(ui: ReactElement) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+  return render(
+    <QueryClientProvider client={client}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>{ui}</LocalizationProvider>
+    </QueryClientProvider>,
+  );
 }
 
 function makeHero(overrides: Partial<Hero> = {}): Hero {
@@ -38,7 +44,7 @@ function makeHero(overrides: Partial<Hero> = {}): Hero {
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText('Name'), 'Bruce Wayne');
   await user.type(screen.getByLabelText('Nickname'), 'Batman');
-  await user.type(screen.getByLabelText('Date of birth'), '1970-01-01');
+  await user.type(screen.getByLabelText('Date of birth'), '01011970');
   await user.type(screen.getByLabelText('Universe'), 'DC');
   await user.type(screen.getByLabelText('Main power'), 'Genius detective');
   await user.type(screen.getByLabelText('Avatar URL'), 'https://example.com/batman.png');
@@ -116,7 +122,9 @@ describe('HeroFormDialog', () => {
   it('shows error feedback and keeps entered values when an edit submission fails', async () => {
     const user = userEvent.setup();
     const hero = makeHero();
-    vi.mocked(updateHero).mockRejectedValue(new ApiError(409, 'Conflict', 'Cannot edit an inactive hero'));
+    vi.mocked(updateHero).mockRejectedValue(
+      new ApiError(409, 'Conflict', 'Cannot edit an inactive hero'),
+    );
     const onError = vi.fn();
     const onClose = vi.fn();
 

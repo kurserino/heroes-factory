@@ -38,18 +38,12 @@ export class HeroesController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() dto: UpdateHeroDto,
-  ): Promise<Hero> {
+  update(@Param('id') id: string, @Body() dto: UpdateHeroDto): Promise<Hero> {
     return this.heroesService.update(id, dto);
   }
 
   @Patch(':id/status')
-  updateStatus(
-    @Param('id') id: string,
-    @Body() dto: UpdateHeroStatusDto,
-  ): Promise<Hero> {
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateHeroStatusDto): Promise<Hero> {
     return this.heroesService.updateStatus(id, dto.is_active);
   }
 
