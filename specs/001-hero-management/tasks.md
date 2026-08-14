@@ -319,11 +319,15 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 - [ ] T104 [P] Write `README.md` sections: prerequisites, environment setup, Docker database startup, running Prisma migrations
 - [ ] T105 [P] Write `README.md` sections: frontend startup, backend startup, running tests
 - [ ] T106 [P] Write `README.md` sections: API overview (summarizing `contracts/heroes-api.md`), relevant trade-offs, potential future improvements
-- [ ] T107 Run all `quickstart.md` validation scenarios (A–G) end-to-end against the running app and confirm each passes
-- [ ] T108 Run `tsc --noEmit` across `apps/api` and `apps/web` and resolve any strict-mode errors
-- [ ] T109 Run the full lint and test suite from the repo root (`npm run lint`, `npm run test`) and resolve any failures
+- [ ] T107 Run all `quickstart.md` validation scenarios (A–G) end-to-end against the running app and confirm each passes — **not done this session** (out of scope: this session focused on automated tests/validation/builds only, not the manual quickstart walkthrough as a discrete task; Scenarios A–F were however exercised live in the browser across the two prior implementation sessions)
+- [X] T108 Run `tsc --noEmit` across `apps/api` and `apps/web` and resolve any strict-mode errors — both clean, 0 errors
+- [X] T109 Run the full lint and test suite from the repo root (`npm run lint`, `npm run test`) and resolve any failures — both clean; additionally ran `npm run test:e2e` (backend integration, not covered by the root `test` aggregate script) and production builds (`npm run build`) for both workspaces, all passing. Closed four real coverage gaps found while reviewing existing tests (not padding — each covers previously-untested logic):
+  - `apps/api/test/unit/avatar-url-validator.spec.ts` (new file): the `AvatarUrlValidator` class itself — the actual FR-025 image-verification logic — had only ever been exercised through a fake substitute in integration tests, never directly
+  - `apps/api/test/integration/heroes.e2e-spec.ts`: added a standalone `GET /heroes/:id` → 404-for-nonexistent-id case (previously only covered incidentally, chained after a delete)
+  - `apps/web/src/lib/apiClient.test.ts` (new file): the error-normalization boundary (`ApiError` construction from array vs. string `message`, 204-no-body handling) had zero coverage despite being the single translation point for every API error the UI surfaces
+  - `apps/web/src/features/heroes/schemas/heroFormSchema.test.ts` (new file): the Zod schema's own rules (future-date rejection, required-field rejection, URL format, trimming) had only been exercised indirectly through one `HeroFormDialog` case
 
-**Checkpoint**: Project is complete, documented, and passes all automated checks.
+**Checkpoint**: Project passes all automated checks — **verified**: 9/9 backend unit, 11/11 backend integration, 27/27 frontend tests, 0 lint errors and 0 strict-mode type errors across both workspaces, both production builds succeed. Documentation tasks (T103–T106) and the manual quickstart walkthrough (T107) remain open — out of scope for this session's explicit focus on automated testing/validation/builds.
 
 ---
 

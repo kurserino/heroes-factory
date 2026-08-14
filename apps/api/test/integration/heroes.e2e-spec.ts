@@ -90,6 +90,15 @@ describe('Heroes API (e2e)', () => {
     expect(response.body.name).toBe(validCreateBody.name);
   });
 
+  it('GET /heroes/:id returns 404 for a nonexistent hero', async () => {
+    const response = await request(app.getHttpServer()).get(
+      '/heroes/00000000-0000-0000-0000-000000000000',
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.body.statusCode).toBe(404);
+  });
+
   it('GET /heroes returns heroes ordered by created_at descending', async () => {
     await createHero({ name: 'First', nickname: 'First-Nick' });
     await new Promise((resolve) => setTimeout(resolve, 20));
