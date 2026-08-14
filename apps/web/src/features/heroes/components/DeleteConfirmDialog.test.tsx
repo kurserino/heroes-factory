@@ -50,7 +50,8 @@ describe('DeleteConfirmDialog (via HeroActions)', () => {
       <HeroActions hero={makeHero()} onEdit={vi.fn()} onSuccess={vi.fn()} onError={vi.fn()} />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Delete Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Delete Peter Parker' }));
 
     expect(deleteHero).not.toHaveBeenCalled();
     expect(screen.getByText('Permanently delete hero?')).toBeInTheDocument();
@@ -68,7 +69,8 @@ describe('DeleteConfirmDialog (via HeroActions)', () => {
       <HeroActions hero={makeHero()} onEdit={vi.fn()} onSuccess={vi.fn()} onError={vi.fn()} />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Delete Peter Parker' }));
+    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Delete Peter Parker' }));
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(deleteHero).not.toHaveBeenCalled();

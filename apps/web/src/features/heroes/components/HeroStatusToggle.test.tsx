@@ -46,9 +46,9 @@ describe('HeroStatusToggle', () => {
       <HeroStatusToggle hero={makeHero({ is_active: true })} onSuccess={vi.fn()} onError={vi.fn()} />,
     );
 
-    await user.click(screen.getByLabelText('Toggle active state for Peter Parker'));
+    await user.click(screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }));
 
-    // Mutation must not fire just from clicking the switch.
+    // Mutation must not fire just from selecting the menu item.
     expect(updateHeroStatus).not.toHaveBeenCalled();
     expect(screen.getByText('Deactivate hero?')).toBeInTheDocument();
 
@@ -65,7 +65,7 @@ describe('HeroStatusToggle', () => {
       <HeroStatusToggle hero={makeHero({ is_active: true })} onSuccess={vi.fn()} onError={vi.fn()} />,
     );
 
-    await user.click(screen.getByLabelText('Toggle active state for Peter Parker'));
+    await user.click(screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }));
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(updateHeroStatus).not.toHaveBeenCalled();

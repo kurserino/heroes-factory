@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ReactElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Hero } from '../types/hero';
@@ -36,23 +37,36 @@ function baseProps() {
 }
 
 describe('HeroCard', () => {
-  it('renders an active hero with Edit and Delete actions available', () => {
+  it('renders an active hero whose "More actions" menu offers Edit and Delete', async () => {
+    const user = userEvent.setup();
     renderWithClient(<HeroCard hero={makeHero({ is_active: true })} {...baseProps()} />);
 
     expect(screen.getByText('Peter Parker')).toBeInTheDocument();
     expect(screen.queryByText('Inactive')).not.toBeInTheDocument();
     expect(screen.getByTestId('hero-card')).toHaveAttribute('data-active', 'true');
-    expect(screen.getByRole('button', { name: 'Edit Peter Parker' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Delete Peter Parker' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+
+    expect(screen.getByRole('menuitem', { name: 'Edit Peter Parker' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Delete Peter Parker' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }),
+    ).toBeChecked();
   });
 
-  it('renders an inactive hero with gray presentation and no Edit/Delete actions', () => {
+  it('renders an inactive hero with gray presentation and no Edit/Delete in its menu', async () => {
+    const user = userEvent.setup();
     renderWithClient(<HeroCard hero={makeHero({ is_active: false })} {...baseProps()} />);
 
     expect(screen.getByText('Inactive')).toBeInTheDocument();
     expect(screen.getByTestId('hero-card')).toHaveAttribute('data-active', 'false');
-    expect(screen.queryByRole('button', { name: 'Edit Peter Parker' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Delete Peter Parker' })).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Toggle active state for Peter Parker')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'More actions for Peter Parker' }));
+
+    expect(screen.queryByRole('menuitem', { name: 'Edit Peter Parker' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Delete Peter Parker' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('switch', { name: 'Toggle active state for Peter Parker' }),
+    ).not.toBeChecked();
   });
 });

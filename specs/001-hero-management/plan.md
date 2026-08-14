@@ -17,6 +17,14 @@ keep the service unit-testable without a database. MySQL runs via Docker Compose
 processes run locally with Node.js. All business rules (active-state gating on edit/delete,
 default-active creation, is_active-only mutation for activation) are enforced server-side.
 
+**Amendment (spec.md Clarifications, session 2026-08-14, FR-014/FR-014a)**: per-hero actions
+(Edit, Delete, activation toggle) are not permanently-visible card controls — they are
+grouped behind a three-dot "More actions" overflow menu anchored to each `HeroCard`'s
+top-right corner, with menu contents varying by active/inactive state. This is a
+frontend-only UX revision (tasks.md Phase 21); it introduces no new dependency (MUI `Menu`/
+`MenuItem` are already part of the existing `@mui/material` dependency) and no backend/API
+change.
+
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x (strict mode), Node.js 20 LTS
@@ -143,8 +151,8 @@ apps/
     │   │       ├── components/
     │   │       │   ├── HeroList.tsx
     │   │       │   ├── HeroCard.tsx
-    │   │       │   ├── HeroActions.tsx
-    │   │       │   ├── HeroStatusToggle.tsx
+    │   │       │   ├── HeroActions.tsx      # "More actions" overflow menu (see Amendment above)
+    │   │       │   ├── HeroStatusToggle.tsx # renders as a MenuItem inside HeroActions' menu
     │   │       │   ├── HeroDetailsDialog.tsx
     │   │       │   ├── HeroFormDialog.tsx
     │   │       │   ├── DeleteConfirmDialog.tsx

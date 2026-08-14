@@ -15,6 +15,7 @@ export function HeroCard({ hero, onSelect, onEdit, onActionSuccess, onActionErro
     <Card
       variant="outlined"
       sx={{
+        position: 'relative',
         opacity: hero.is_active ? 1 : 0.6,
         filter: hero.is_active ? 'none' : 'grayscale(1)',
         bgcolor: hero.is_active ? 'background.paper' : 'action.disabledBackground',

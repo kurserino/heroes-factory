@@ -17,6 +17,8 @@
 - Q: Should hero search results update automatically as the user types (live search), or only after the user explicitly submits the search? → A: Explicit search: results only update when the user submits (Enter key or Search button).
 - Q: If a user tries to close the create/edit modal while they have unsaved changes or a submission is in flight, what should happen? → A: Modal cannot be dismissed while a submission is pending; once idle, it can always be closed immediately (no confirmation for unsaved edits).
 - Q: Does activating/deactivating a hero refresh its `updated_at` timestamp, or does "leaving all other fields untouched" (FR-010) include `updated_at`? → A: `updated_at` IS refreshed on activation/deactivation, since it is a general last-modified timestamp.
+- Q: Should hero card actions (Edit, Delete, activation toggle) remain permanently visible on the card, or be grouped behind a contextual overflow menu? → A: Grouped behind a three-dot "More actions" button in the card's top-right corner; opening it shows a menu anchored to that trigger, with contents varying by active/inactive state, closing on selection, outside click, or Escape. No hero action remains permanently visible on the card outside this menu. This is a frontend-only UX decision — no backend/API change.
+- Q: Within the "More actions" menu, should Edit, Delete, and the activation control use visible text labels or icon-only controls? → A: Icon-only. Edit and Delete are icon-only actions (with tooltips and accessible names, since no visible label is shown) and the activation control is a switch reflecting the current `is_active` value (checked = active, unchecked = inactive) rather than text like "Deactivate"/"Reactivate". No visible text labels ("Edit", "Delete", "Activate", "Deactivate") are rendered inside the menu. This is a frontend-only UX decision — no backend/API change.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -95,17 +97,17 @@ delivers value by keeping hero data accurate.
 
 **Acceptance Scenarios**:
 
-1. **Given** an active hero, **When** the user opens its edit action, **Then** a modal
-   opens pre-filled with all current hero information, and only name, nickname, date of
-   birth, universe, main power, and avatar URL are modifiable.
+1. **Given** an active hero, **When** the user opens its "More actions" menu and selects
+   Edit, **Then** a modal opens pre-filled with all current hero information, and only
+   name, nickname, date of birth, universe, main power, and avatar URL are modifiable.
 2. **Given** the edit modal with changes made, **When** the user submits valid data,
    **Then** the hero is updated, the modal closes, and the list/detail view show the new
    values.
 3. **Given** the edit modal with invalid data, **When** the user submits, **Then** the
    submission is rejected, an explanatory error is shown, and the entered values remain in
    the form.
-4. **Given** an inactive hero, **When** the user views it in the list, **Then** no Edit
-   action is available for it.
+4. **Given** an inactive hero, **When** the user opens its "More actions" menu, **Then**
+   no Edit option is available for it.
 
 ---
 
@@ -124,15 +126,18 @@ create/edit/delete.
 
 **Acceptance Scenarios**:
 
-1. **Given** an active hero, **When** the user switches its toggle off, **Then** the user
-   is asked to confirm before the hero becomes inactive.
+1. **Given** an active hero, **When** the user opens its "More actions" menu and selects
+   the Active/Inactive toggle to deactivate it, **Then** the user is asked to confirm
+   before the hero becomes inactive.
 2. **Given** the user confirms deactivation, **When** the change is persisted, **Then**
-   the hero is shown grayed out in the list, retains its Delete-and-Edit-disabled state,
-   and only exposes the toggle.
-3. **Given** an inactive hero, **When** the user switches its toggle on, **Then** the user
-   is asked to confirm before the hero becomes active again.
+   the hero is shown grayed out in the list, and its "More actions" menu now offers only
+   the reactivation toggle (no Edit or Delete).
+3. **Given** an inactive hero, **When** the user opens its "More actions" menu and selects
+   the Active/Inactive toggle to reactivate it, **Then** the user is asked to confirm
+   before the hero becomes active again.
 4. **Given** the user confirms reactivation, **When** the change is persisted, **Then**
-   the hero returns to its normal appearance and regains Edit and Delete actions.
+   the hero returns to its normal appearance and its "More actions" menu regains Edit and
+   Delete.
 5. **Given** a toggle confirmation is pending, **When** the user attempts to trigger it
    again before it completes, **Then** the duplicate action is prevented.
 
@@ -152,12 +157,12 @@ permanent removal of erroneous or unwanted records.
 
 **Acceptance Scenarios**:
 
-1. **Given** an active hero, **When** the user triggers Delete, **Then** the user is asked
-   to confirm before the hero is permanently removed.
+1. **Given** an active hero, **When** the user opens its "More actions" menu and selects
+   Delete, **Then** the user is asked to confirm before the hero is permanently removed.
 2. **Given** the user confirms deletion, **When** the deletion completes, **Then** the hero
    no longer appears in the list at any page or search result.
-3. **Given** an inactive hero, **When** the user views it in the list, **Then** no Delete
-   action is available for it.
+3. **Given** an inactive hero, **When** the user opens its "More actions" menu, **Then**
+   no Delete option is available for it.
 
 ---
 
@@ -216,8 +221,23 @@ permanent removal of erroneous or unwanted records.
   deleted.
 - **FR-013**: System MUST visually distinguish inactive heroes (gray appearance) from
   active heroes anywhere they appear in the list.
-- **FR-014**: System MUST NOT offer Edit or Delete actions for an inactive hero; an
-  inactive hero's only available action is reactivation via its toggle.
+- **FR-014**: System MUST group every per-hero action (Edit, Delete, activation toggle)
+  inside a single contextual "More actions" overflow menu per hero card, rather than as
+  permanently visible controls on the card. For an active hero, this menu MUST offer Edit,
+  Delete, and the deactivation toggle. For an inactive hero, this menu MUST offer only the
+  reactivation toggle — Edit and Delete MUST NEVER be rendered for an inactive hero, in
+  this menu or anywhere else.
+- **FR-014a**: The "More actions" menu MUST be triggered by a three-dot button positioned
+  in the top-right corner of each hero card, and MUST open as a menu anchored to that
+  trigger. The menu MUST close when: an action within it is selected, the user clicks
+  outside the menu, or the user presses Escape.
+- **FR-014b**: Within the "More actions" menu, Edit and Delete MUST be icon-only controls
+  with no visible text label, each with a tooltip and an accessible name so the icon-only
+  presentation does not reduce discoverability or accessibility. The activation control
+  MUST be a switch reflecting the hero's current `is_active` value (checked = active,
+  unchecked = inactive) rather than a text-labeled toggle action ("Activate"/"Deactivate").
+  No visible text labels ("Edit", "Delete", "Activate", "Deactivate") are rendered inside
+  the menu.
 - **FR-015**: System MUST prevent a duplicate submission of the same state-changing
   operation (create, edit, activate, deactivate, delete) while one is already pending for
   that hero.

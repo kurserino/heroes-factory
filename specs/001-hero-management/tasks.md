@@ -248,7 +248,7 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 - [X] T082 [US3] Wire edit mode of `HeroFormDialog` (pre-filled from the selected hero; non-editable fields — status, created — shown read-only) to `useUpdateHeroMutation`, with loading/success/error feedback and value preservation on failure
 - [X] T083 [US3] Create `apps/web/src/features/heroes/components/HeroActions.tsx` rendering an Edit action (opens `HeroFormDialog` in edit mode) only when the hero is active
 
-**Checkpoint**: US3 fully functional and independently demoable. **Verified**: manually exercised in a real browser — edited an active hero's main power, saw success feedback and the updated value persist.
+**Checkpoint**: US3 fully functional and independently demoable. **Verified**: manually exercised in a real browser — edited an active hero's main power, saw success feedback and the updated value persist. **Superseded**: per the accepted UX requirement (spec.md FR-014/FR-014a), Edit is no longer a permanently-visible icon button — it moves inside the "More actions" overflow menu in Phase 21. `HeroFormDialog` and `useUpdateHeroMutation` are unchanged and reused as-is.
 
 ---
 
@@ -262,7 +262,7 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 - [X] T085 [US4] Create `apps/web/src/features/heroes/components/HeroStatusToggle.tsx` (MUI `Switch` opening `StatusConfirmDialog`; on confirm, calls `useUpdateHeroStatusMutation`; disabled while a change is pending, per FR-015)
 - [X] T086 [US4] Wire `HeroStatusToggle` into `HeroActions` for both active and inactive heroes in `apps/web/src/features/heroes/components/HeroActions.tsx`
 
-**Checkpoint**: US4 fully functional and independently demoable. **Verified**: manually exercised in a real browser — deactivate (with confirmation) grayed the card and hid Edit/Delete; reactivate (with confirmation) restored them.
+**Checkpoint**: US4 fully functional and independently demoable. **Verified**: manually exercised in a real browser — deactivate (with confirmation) grayed the card and hid Edit/Delete; reactivate (with confirmation) restored them. **Superseded**: per the accepted UX requirement (spec.md FR-014/FR-014a, Clarifications session 2026-08-14), the toggle is no longer a permanently-visible `Switch` on the card — it moves inside the "More actions" overflow menu in Phase 21. `StatusConfirmDialog` and the mutation logic in `HeroStatusToggle` are unchanged and reused as-is.
 
 ---
 
@@ -275,7 +275,7 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 - [X] T087 [US5] Create `apps/web/src/features/heroes/components/DeleteConfirmDialog.tsx` (MUI `Dialog` confirming permanent deletion before persisting)
 - [X] T088 [US5] Add a Delete action to `apps/web/src/features/heroes/components/HeroActions.tsx`, rendered only for active heroes, wired to `DeleteConfirmDialog` then `useDeleteHeroMutation`
 
-**Checkpoint**: US5 fully functional and independently demoable — all five user stories now complete. **Verified**: manually exercised in a real browser — deleted an active hero (with confirmation), saw success feedback, hero disappeared and list fell back to the empty state.
+**Checkpoint**: US5 fully functional and independently demoable — all five user stories now complete. **Verified**: manually exercised in a real browser — deleted an active hero (with confirmation), saw success feedback, hero disappeared and list fell back to the empty state. **Superseded**: per the accepted UX requirement (spec.md FR-014/FR-014a), Delete is no longer a permanently-visible icon button — it moves inside the "More actions" overflow menu in Phase 21. `DeleteConfirmDialog` and `useDeleteHeroMutation` are unchanged and reused as-is.
 
 ---
 
@@ -315,10 +315,10 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 
 **Purpose**: Leave the project reproducible and defensible for review (Constitution Principles XIII, XVI).
 
-- [ ] T103 Write root `README.md` sections: project architecture, folder structure, and architectural decisions (repository pattern, no Redux/Router, npm workspaces) referencing `plan.md`/`research.md`
-- [ ] T104 [P] Write `README.md` sections: prerequisites, environment setup, Docker database startup, running Prisma migrations
-- [ ] T105 [P] Write `README.md` sections: frontend startup, backend startup, running tests
-- [ ] T106 [P] Write `README.md` sections: API overview (summarizing `contracts/heroes-api.md`), relevant trade-offs, potential future improvements
+- [X] T103 Write root `README.md` sections: project architecture, folder structure, and architectural decisions (repository pattern, no Redux/Router, npm workspaces) referencing `plan.md`/`research.md`
+- [X] T104 [P] Write `README.md` sections: prerequisites, environment setup, Docker database startup, running Prisma migrations — also documents the one-time `heroes_app` grant needed for `migrate:dev`'s shadow database, discovered during Phase 4's implementation
+- [X] T105 [P] Write `README.md` sections: frontend startup, backend startup, running tests — includes the root `npm run dev` (via `concurrently`) that now runs both apps together
+- [X] T106 [P] Write `README.md` sections: API overview (summarizing `contracts/heroes-api.md`), relevant trade-offs, potential future improvements
 - [ ] T107 Run all `quickstart.md` validation scenarios (A–G) end-to-end against the running app and confirm each passes — **not done this session** (out of scope: this session focused on automated tests/validation/builds only, not the manual quickstart walkthrough as a discrete task; Scenarios A–F were however exercised live in the browser across the two prior implementation sessions)
 - [X] T108 Run `tsc --noEmit` across `apps/api` and `apps/web` and resolve any strict-mode errors — both clean, 0 errors
 - [X] T109 Run the full lint and test suite from the repo root (`npm run lint`, `npm run test`) and resolve any failures — both clean; additionally ran `npm run test:e2e` (backend integration, not covered by the root `test` aggregate script) and production builds (`npm run build`) for both workspaces, all passing. Closed four real coverage gaps found while reviewing existing tests (not padding — each covers previously-untested logic):
@@ -328,6 +328,185 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
   - `apps/web/src/features/heroes/schemas/heroFormSchema.test.ts` (new file): the Zod schema's own rules (future-date rejection, required-field rejection, URL format, trimming) had only been exercised indirectly through one `HeroFormDialog` case
 
 **Checkpoint**: Project passes all automated checks — **verified**: 9/9 backend unit, 11/11 backend integration, 27/27 frontend tests, 0 lint errors and 0 strict-mode type errors across both workspaces, both production builds succeed. Documentation tasks (T103–T106) and the manual quickstart walkthrough (T107) remain open — out of scope for this session's explicit focus on automated testing/validation/builds.
+
+---
+
+## Phase 21: HeroCard contextual "More actions" menu (US3, US4, US5 — frontend-only UI revision)
+
+**Purpose**: Implement the accepted UX requirement recorded in spec.md's Clarifications session
+2026-08-14 (FR-014, FR-014a): all per-hero actions (Edit, Delete, activation toggle) move from
+permanently-visible controls into a single three-dot "More actions" overflow menu per card. This
+phase is **frontend-only** — no backend/API change (per explicit instruction; Phases 5–9's backend
+tasks are untouched). It revises components built in Phases 15–17 rather than replacing them:
+`HeroFormDialog`, `StatusConfirmDialog`, `DeleteConfirmDialog`, and all four mutation hooks
+(`useUpdateHeroMutation`, `useUpdateHeroStatusMutation`, `useDeleteHeroMutation`) are reused
+unchanged — only how their triggers are presented and reached changes.
+
+**Independent Test**: On an active hero's card, open "More actions" and confirm Edit, Delete, and
+the deactivation toggle are all present and each still requires its existing confirmation dialog
+before mutating; on an inactive hero's card, open "More actions" and confirm only the reactivation
+toggle is present, with Edit and Delete absent. Confirm the menu closes on selecting an action, on
+an outside click, and on Escape.
+
+- [X] T120 [US4] Modify `apps/web/src/features/heroes/components/HeroActions.tsx`: remove the
+  always-visible Edit/Delete `IconButton`s and the always-visible `HeroStatusToggle` render (the
+  `MUI Switch` layout); replace them with a single three-dot trigger (`IconButton` +
+  `MoreVertIcon` from `@mui/icons-material`) that opens a MUI `Menu` anchored to that trigger via
+  local `anchorEl` state. **Resolved ambiguity (was flagged in `/speckit-analyze` finding G1)**:
+  `HeroStatusToggle.tsx` is NOT deleted or inlined — it is repurposed (see T123) to render as a
+  `MenuItem`-compatible control instead of a standalone `Switch`, so its existing confirm-dialog +
+  mutation logic keeps living in one place and is reused, not duplicated or orphaned
+- [X] T121 [US4] In `HeroActions.tsx`, populate the open menu conditionally on `hero.is_active`:
+  active heroes get three `MenuItem`s — Edit, Delete, and the Active/Inactive toggle (deactivate);
+  inactive heroes get exactly one `MenuItem` — the Active/Inactive toggle (reactivate). Edit and
+  Delete `MenuItem`s MUST NOT be rendered at all (not just disabled) when the hero is inactive,
+  per FR-014
+- [X] T122 [US3] [US5] Wire the Edit and Delete `MenuItem`s: selecting Edit calls the existing
+  `onEdit(hero)` callback (opens `HeroFormDialog` in edit mode, per Phase 15); selecting Delete
+  opens the existing `DeleteConfirmDialog` (per Phase 17). Both selections MUST close the menu
+  immediately (before the confirmation dialog or form dialog opens)
+- [X] T123 [US4] Modify `apps/web/src/features/heroes/components/HeroStatusToggle.tsx` so its
+  root element is a `MenuItem` (label: "Deactivate"/"Reactivate" depending on `hero.is_active`)
+  instead of a `Switch`; its existing internal state, `StatusConfirmDialog` usage, and
+  `useUpdateHeroStatusMutation` call are otherwise unchanged. In `HeroActions.tsx`, render this
+  updated `HeroStatusToggle` as the toggle `MenuItem` inside the open menu, and have it close the
+  parent menu immediately on selection (before `StatusConfirmDialog` opens), independent of the
+  confirm/cancel outcome — this is the reuse mechanism resolving `/speckit-analyze` finding G1.
+  **Bug found and fixed during implementation**: closing the `Menu` (open → false) unmounts its
+  children by default, which destroyed `HeroStatusToggle`'s local `pendingTarget` state (and thus
+  `StatusConfirmDialog`) in the same tick it was set, since selecting the toggle both closes the
+  menu and opens the confirm dialog simultaneously. Fixed by adding `keepMounted` to the `<Menu>`
+  in `HeroActions.tsx`, verified against a real running app in addition to the automated tests.
+- [X] T124 [US4] Wire the MUI `Menu`'s `onClose` to clear `anchorEl`, satisfying FR-014a's three
+  close conditions (selecting an action, clicking outside, pressing Escape) — MUI's `Menu`
+  supports all three natively via `onClose`; no custom outside-click or key-handling code needed
+- [X] T125 [US4] Position the three-dot trigger button in the top-right corner of
+  `apps/web/src/features/heroes/components/HeroCard.tsx` (e.g. via absolute positioning within the
+  `Card`, outside the existing `CardActionArea`), ensuring clicking it does not also trigger the
+  card's `onSelect` (details-dialog) handler — call `event.stopPropagation()` on the trigger's
+  click, consistent with how `HeroActions`' `CardActions` wrapper already does this
+- [X] T126 [US4] [P] Update `apps/web/src/features/heroes/components/HeroCard.test.tsx`: replace
+  the direct `getByRole('button', { name: 'Edit Peter Parker' })` / `'Delete Peter Parker'` queries
+  with "open the More actions menu, then query menu items by role/name" queries; keep the existing
+  assertion that Edit/Delete are absent for an inactive hero, now checked against the opened menu's
+  contents instead of the card's direct children
+- [X] T127 [US4] [P] Create `apps/web/src/features/heroes/components/HeroActions.test.tsx`: test
+  that opening "More actions" on an active hero shows Edit, Delete, and the toggle menu item; that
+  opening it on an inactive hero shows only the toggle menu item; and that the menu closes after
+  selecting any item (5 tests: active-hero contents, inactive-hero contents, close-after-Edit,
+  close-before-delete-confirmation-resolves, close-before-status-confirmation-resolves — the last
+  two are what caught the `keepMounted` bug in T123)
+- [X] T128 [US4] [P] Update `apps/web/src/features/heroes/components/HeroStatusToggle.test.tsx`:
+  update its queries to open the "More actions" menu and select the "Deactivate"/"Reactivate"
+  `MenuItem` (per T123's `Switch` → `MenuItem` change) before asserting confirm-before-mutate,
+  replacing the old direct-`Switch`-click interaction; the file itself is kept (not merged into
+  `HeroActions.test.tsx`), since `HeroStatusToggle` remains its own component per T123
+- [X] T129 [US5] [P] Update `apps/web/src/features/heroes/components/DeleteConfirmDialog.test.tsx`:
+  open the "More actions" menu and select Delete (rather than clicking a standalone Delete button)
+  before asserting confirm-before-mutate; keep the existing cancel-path assertion
+
+**Checkpoint result — verified**: `npx tsc --noEmit` clean (0 errors); `npx vitest run` 32/32
+frontend tests passing (10 test files); `npx eslint` clean (0 errors); `npm run build` (production
+build) succeeds. Additionally manually exercised in a real browser: the three-dot trigger renders
+in the card's top-right corner; opening it shows Edit/Delete/Deactivate for an active hero;
+Escape closes the menu; selecting Deactivate closes the menu immediately while the confirmation
+dialog remains open and functional; confirming persists the change, shows success feedback, grays
+the card, and reopening the menu now shows only Reactivate.
+
+**Checkpoint**: All hero-card actions are reachable only through the "More actions" menu; no
+Edit/Delete/toggle control remains permanently visible on any card; existing confirmation dialogs
+and mutation hooks are unchanged; `npm run test --workspace apps/web` passes with the updated and
+new test files.
+
+---
+
+## Phase 22: HeroCard "More actions" menu — icon-only controls (US3, US4, US5 — frontend-only UI revision)
+
+**Purpose**: Implement the accepted UX requirement recorded in spec.md's Clarifications session
+2026-08-14 (FR-014b): within the "More actions" menu built in Phase 21, Edit and Delete become
+icon-only controls (no visible text label) and the activation control becomes an MUI `Switch`
+reflecting `hero.is_active` (checked = active, unchecked = inactive) instead of a text-labeled
+menu row. This phase is **frontend-only** — no backend/API change. It revises the components built
+in Phase 21 rather than replacing them: `DeleteConfirmDialog`, `StatusConfirmDialog`, and both
+mutation hooks (`useUpdateHeroStatusMutation`, `useDeleteHeroMutation`) are reused unchanged — only
+how the Edit/Delete/toggle triggers are presented inside the menu changes.
+
+**Known pitfall (see Phase 21 / T123)**: closing the `Menu` unmounts its children by default. The
+`<Menu keepMounted>` prop added in Phase 21 already covers this, so `StatusConfirmDialog`'s pending
+state will survive the menu closing — no new fix is needed here, but do not remove `keepMounted`
+while making these changes.
+
+**Independent Test**: Open an active hero's "More actions" menu and confirm it shows exactly two
+icon buttons (Edit, Delete — each with a tooltip and an accessible name, no visible text) plus one
+`Switch` in the checked (active) position, with no text reading "Edit", "Delete", "Deactivate", or
+"Reactivate" anywhere in the menu. Open an inactive hero's menu and confirm it shows only the
+`Switch`, unchecked. Confirm Edit/Delete/switch-change still each go through their existing
+confirmation dialog exactly as before.
+
+- [X] T130 [US3] [US5] Modify `apps/web/src/features/heroes/components/HeroActions.tsx`: replace
+  the text `MenuItem`s for Edit and Delete with icon-only controls — `EditIcon` and `DeleteIcon`
+  from `@mui/icons-material` — each wrapped in an MUI `Tooltip` (`title="Edit"` / `title="Delete"`)
+  and carrying an explicit `aria-label` (e.g. `` `Edit ${hero.name}` ``, `` `Delete ${hero.name}` ``)
+  as their accessible name, since no visible text remains to provide one. Keep them as the first
+  two items in the menu, in the same position/order as the current text `MenuItem`s, and keep their
+  existing `onClick` wiring (`selectEdit`/`selectDelete`, closing the menu immediately) unchanged
+- [X] T131 [US4] Modify `apps/web/src/features/heroes/components/HeroStatusToggle.tsx`: replace the
+  `MenuItem` text content ("Deactivate"/"Reactivate") with an MUI `Switch` — `checked={hero.is_active}`
+  — rendered inside the existing `MenuItem` row (or as the row's sole content), with an `aria-label`
+  of `` `Toggle active state for ${hero.name}` `` (restoring the accessible-name pattern used before
+  Phase 21's text-`MenuItem` change) since the switch itself carries no visible text either. The
+  `onChange` handler MUST call the existing `onSelect` callback (closing the parent menu) and then
+  `setPendingTarget`, exactly as the current `onClick` does — only the trigger element changes, not
+  the confirm-then-mutate flow. Implemented as: the `MenuItem` no longer has its own `onClick` (that
+  would double-fire alongside the `Switch`'s `onChange`); the row's `MenuItem` wraps a `Switch` whose
+  `inputProps` carry `role: 'switch'` (explicit, to guarantee the accessible role regardless of MUI
+  version defaults) and the `aria-label`
+- [X] T132 [US4] In `HeroStatusToggle.tsx`, ensure the `Switch`'s checked state always reflects
+  `hero.is_active` as currently persisted (not an optimistic/pending value) — checked = active,
+  unchecked = inactive — consistent with FR-014b; the switch MUST NOT flip visually until the
+  mutation actually succeeds (`StatusConfirmDialog`'s existing confirm/cancel flow already prevents
+  premature mutation, so this should require no additional state beyond what T131 introduces)
+- [X] T133 [US3] [US4] [US5] Review `HeroActions.tsx` and `HeroStatusToggle.tsx` end-to-end and
+  confirm no visible text reading "Edit", "Delete", "Activate", "Deactivate", or "Reactivate"
+  remains anywhere inside the open menu, per FR-014b — only the two icons, their tooltips (shown on
+  hover/focus, not permanently visible text), and the switch — confirmed both by code review and by
+  a real-browser check (zoomed screenshot of the open menu)
+- [X] T134 [US3] [US5] Verify `DeleteConfirmDialog` and `StatusConfirmDialog` require no changes —
+  both are triggered identically to Phase 21 (menu closes immediately, dialog opens with the same
+  props), just from an icon button / switch instead of a text `MenuItem`; if either dialog's trigger
+  wiring needs adjustment to compile against the new elements, make the minimal change necessary and
+  do not alter the dialogs' own confirm/cancel/pending logic — no changes were needed to either file
+- [X] T135 [US3] [US5] [P] Update `apps/web/src/features/heroes/components/HeroActions.test.tsx`:
+  replace `getByRole('menuitem', { name: 'Edit' })` / `'Delete'` queries with queries against the
+  icon buttons' accessible names (e.g. `getByRole('menuitem', { name: 'Edit Peter Parker' })` if the
+  `aria-label` is placed on the `MenuItem`, or `getByRole('button', { name: 'Edit Peter Parker' })`
+  if placed on the inner `IconButton` — match whatever T130 actually implements); keep the existing
+  active/inactive-contents and close-after-selection assertions. Implemented against
+  `getByRole('menuitem', { name: 'Edit Peter Parker' })` (the `aria-label` is on the `MenuItem`, per
+  T130); also added explicit `queryByText` assertions confirming none of "Edit"/"Delete"/
+  "Deactivate"/"Reactivate" render as visible text
+- [X] T136 [US4] [P] Update `apps/web/src/features/heroes/components/HeroStatusToggle.test.tsx`:
+  replace the `getByRole('menuitem', { name: 'Deactivate' })` query with
+  `getByRole('switch', { name: 'Toggle active state for Peter Parker' })` (or the equivalent role
+  MUI's `Switch` exposes) before asserting confirm-before-mutate; keep the existing cancel-path
+  assertion
+- [X] T137 [US4] [P] Update `apps/web/src/features/heroes/components/HeroCard.test.tsx`: update the
+  active-hero assertions to query the Edit/Delete icon buttons and the switch instead of text
+  `MenuItem`s; keep the inactive-hero assertion that Edit/Delete are absent and only the switch
+  (now unchecked) is present
+- [X] T138 [US5] [P] Update `apps/web/src/features/heroes/components/DeleteConfirmDialog.test.tsx`:
+  update the menu-item query for Delete to match T130's icon-button accessible name; keep the
+  existing confirm-before-mutate and cancel-path assertions
+
+**Checkpoint result — verified**: `npx tsc --noEmit` clean (0 errors); `npx vitest run` 32/32
+frontend tests passing (10 test files, including 2 new no-visible-text assertions); `npx eslint`
+clean (0 errors); `npm run build` (production build) succeeds. Additionally manually exercised in a
+real browser: opened an active hero's menu and confirmed (via a zoomed screenshot) exactly one Edit
+pencil icon, one Delete trash icon, and one checked switch, with no visible text anywhere; opened an
+inactive hero's menu and confirmed only an unchecked switch is present; toggling the switch closed
+the menu immediately while the reactivation confirmation dialog opened and remained functional
+(`keepMounted` still holds with the new trigger); confirming persisted the change and showed success
+feedback.
 
 ---
 
@@ -355,6 +534,13 @@ Tasks with no `[USn]` label are cross-cutting infrastructure/foundation that all
 - **Phase 18 (Cross-cutting UX polish)**: Depends on Phases 14–17 all existing
 - **Phase 19 (Frontend tests)**: Depends on the components under test existing (Phases 12–18)
 - **Phase 20 (Docs/final checks)**: Depends on everything else
+- **Phase 21 (HeroCard "More actions" menu)**: Depends on Phases 15–17 (revises `HeroActions.tsx`,
+  reusing `HeroFormDialog`, `StatusConfirmDialog`, and `DeleteConfirmDialog` from those phases
+  unchanged); independent of Phases 18–20 and of all backend phases (1–9), which this phase does
+  not touch
+- **Phase 22 (Icon-only "More actions" controls)**: Depends on Phase 21 (revises the `HeroActions.tsx`
+  / `HeroStatusToggle.tsx` menu contents built there); reuses `DeleteConfirmDialog` and
+  `StatusConfirmDialog` unchanged; independent of Phases 18–20 and of all backend phases (1–9)
 
 ### User Story Independence
 
@@ -370,6 +556,8 @@ curl) to exercise backend-only stories ahead of their frontend UI.
 - Phase 8 (unit tests) can proceed in parallel with Phase 7 (controllers) once Phase 6 (service) is done
 - Within Phases 8–9 and 19, all listed test tasks are `[P]` (independent test files/cases)
 - Phase 14 (Create) can proceed in parallel with Phases 12–13 (List/Details) once Phase 11 is done, since they touch different components until `HeroFormDialog` is reused by Phase 15
+- Within Phase 21, T126–T129 (test updates, all `[P]`) can proceed in parallel with each other once T120–T125 (the `HeroActions`/`HeroCard` implementation changes) land
+- Within Phase 22, T135–T138 (test updates, all `[P]`) can proceed in parallel with each other once T130–T134 (the icon/switch implementation changes) land
 
 ---
 
@@ -391,6 +579,8 @@ curl) to exercise backend-only stories ahead of their frontend UI.
 5. Phase 16 → US4 (activate/deactivate) → validate independently → demo
 6. Phase 17 → US5 (delete) → validate independently → demo
 7. Phases 18–20 → polish, test coverage, documentation → final review
+8. Phase 21 → accepted UX revision (HeroCard "More actions" menu) → validate independently → demo
+9. Phase 22 → accepted UX revision (icon-only Edit/Delete + Switch) → validate independently → demo
 
 ### Commit Granularity
 
