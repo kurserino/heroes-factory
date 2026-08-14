@@ -30,6 +30,15 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
+function formatDateOfBirth(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!match) {
+    return iso;
+  }
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
+}
+
 export function HeroDetailsDialog({ hero, onClose }: HeroDetailsDialogProps) {
   const open = hero !== null;
 
@@ -53,7 +62,7 @@ export function HeroDetailsDialog({ hero, onClose }: HeroDetailsDialogProps) {
               </Box>
               <Stack direction="row" spacing={2}>
                 <Field label="Full name" value={hero.name} />
-                <Field label="Date of birth" value={hero.date_of_birth} />
+                <Field label="Date of birth" value={formatDateOfBirth(hero.date_of_birth)} />
               </Stack>
               <Stack direction="row" spacing={2}>
                 <Field label="Universe" value={hero.universe} />
