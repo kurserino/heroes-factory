@@ -149,6 +149,22 @@ localmente via Node.js.
 
 ## Rodando as migrations
 
+### (Opcional) Garantir privileges para dev local
+
+O `migrate:dev` precisa de permissão pra criar um shadow database temporário e
+detectar divergências de schema. O usuário padrão `heroes_app` (veja
+`docker-compose.yml`) pode não ter privilégios suficientes pra isso num ambiente
+novo. Se você rodar `migrate:dev` e ver um erro de permissão, rode isso uma única
+vez contra o container do MySQL:
+
+```bash
+docker compose exec mysql mysql -uroot -pheroes_root_password -e "GRANT ALL PRIVILEGES ON *.* TO 'heroes_app'@'%'; FLUSH PRIVILEGES;"
+```
+
+Ajuste o usuário/senha se você alterou os valores padrão do `.env` da raiz. Isso é
+só uma conveniência de dev local; o `migrate deploy` (usado pra aplicações
+repetíveis/CI) não precisa disso.
+
 ```bash
 npm run migrate:dev --workspace apps/api
 ```
@@ -156,14 +172,6 @@ npm run migrate:dev --workspace apps/api
 Aplica (e, se o schema mudou, gera) migrations contra o banco em execução. Para uma
 aplicação não interativa/estilo CI de migrations já commitadas, use
 `npm run migrate --workspace apps/api` (`prisma migrate deploy`).
-
-> **Nota**: o `migrate:dev` precisa de permissão pra criar um shadow database
-> temporário e detectar divergências. O usuário padrão `heroes_app` (veja
-> `docker-compose.yml`) pode precisar de grants mais amplos pra isso num ambiente
-> novo — para desenvolvimento local, isso é um `GRANT ALL PRIVILEGES ON *.* TO
-'heroes_app'@'%'` executado uma única vez contra o container do MySQL. Isso é só
-> uma conveniência de dev local; o `migrate deploy` (usado pra aplicações
-> repetíveis/CI) não precisa disso.
 
 ## Populando o banco com dados de exemplo (seed)
 
