@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Button,
   Dialog,
@@ -13,6 +12,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Hero } from '../types/hero';
+import { HeroAvatar } from './HeroAvatar';
 
 interface HeroDetailsDialogProps {
   hero: Hero | null;
@@ -58,7 +58,7 @@ export function HeroDetailsDialog({ hero, onClose }: HeroDetailsDialogProps) {
           <DialogContent>
             <Stack spacing={2} py={1}>
               <Box display="flex" justifyContent="center">
-                <Avatar src={hero.avatar_url} alt={hero.name} sx={{ width: 96, height: 96 }} />
+                <HeroAvatar src={hero.avatar_url} alt={hero.name} size={96} />
               </Box>
               <Stack direction="row" spacing={2}>
                 <Field label="Nome completo:" value={hero.name} />

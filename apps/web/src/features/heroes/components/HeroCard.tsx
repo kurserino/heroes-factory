@@ -1,6 +1,7 @@
-import { Avatar, Card, CardActionArea, CardContent, Typography } from '@mui/material';
+import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
 import { Hero } from '../types/hero';
 import { HeroActions } from './HeroActions';
+import { HeroAvatar } from './HeroAvatar';
 
 interface HeroCardProps {
   hero: Hero;
@@ -35,7 +36,7 @@ export function HeroCard({
         <CardContent
           sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}
         >
-          <Avatar src={hero.avatar_url} alt={hero.name} sx={{ width: 96, height: 96 }} />
+          <HeroAvatar src={hero.avatar_url} alt={hero.name} size={96} />
           <Typography variant="subtitle1" component="h3" fontWeight={500} textAlign="center">
             {hero.nickname}
           </Typography>
