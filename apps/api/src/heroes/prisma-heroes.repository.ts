@@ -15,18 +15,25 @@ function toDate(value: string): Date {
   return new Date(value);
 }
 
+// MySQL-style "YYYY-MM-DD HH:mm:ss" (UTC, no milliseconds/timezone marker) —
+// matches the raw DATETIME/DATE string shape rather than JS's default ISO
+// 8601 `toISOString()` output.
+function toMysqlDateTime(date: Date): string {
+  return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
 function toEntity(record: PrismaHero): Hero {
   return {
     id: record.id,
     name: record.name,
     nickname: record.nickname,
-    date_of_birth: record.date_of_birth.toISOString().slice(0, 10),
+    date_of_birth: toMysqlDateTime(record.date_of_birth),
     universe: record.universe,
     main_power: record.main_power,
     avatar_url: record.avatar_url,
     is_active: record.is_active,
-    created_at: record.created_at.toISOString(),
-    updated_at: record.updated_at.toISOString(),
+    created_at: toMysqlDateTime(record.created_at),
+    updated_at: toMysqlDateTime(record.updated_at),
   };
 }
 
