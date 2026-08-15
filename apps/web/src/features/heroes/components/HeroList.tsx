@@ -66,7 +66,7 @@ export function HeroList() {
           <Box
             sx={{
               display: 'grid',
-              gap: 2,
+              gap: 3,
               gridTemplateColumns: {
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',

@@ -36,7 +36,7 @@ export function HeroCard({
         <CardContent
           sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}
         >
-          <HeroAvatar src={hero.avatar_url} alt={hero.name} size={96} />
+          <HeroAvatar src={hero.avatar_url} alt={hero.name} size={112} />
           <Typography variant="subtitle1" component="h3" fontWeight={500} textAlign="center">
             {hero.nickname}
           </Typography>

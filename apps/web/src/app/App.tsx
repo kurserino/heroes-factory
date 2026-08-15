@@ -1,6 +1,7 @@
 import { CssBaseline, Container, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/pt-br';
 import { HeroList } from '../features/heroes/components/HeroList';
 
 const theme = createTheme({
@@ -72,7 +73,11 @@ const theme = createTheme({
 export function App() {
   return (
     <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider
+        dateAdapter={AdapterDayjs}
+        adapterLocale="pt-br"
+        localeText={{ fieldYearPlaceholder: () => 'AAAA' }}
+      >
         <CssBaseline />
         <Container
           maxWidth="xl"

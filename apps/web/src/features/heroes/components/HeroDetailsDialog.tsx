@@ -22,10 +22,12 @@ interface HeroDetailsDialogProps {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <Box flex={1}>
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="body2" fontWeight={500}>
         {label}
       </Typography>
-      <Typography variant="body1">{value}</Typography>
+      <Typography variant="body1" color="text.secondary">
+        {value}
+      </Typography>
     </Box>
   );
 }
@@ -58,10 +60,10 @@ export function HeroDetailsDialog({ hero, onClose }: HeroDetailsDialogProps) {
           <DialogContent>
             <Stack spacing={2} py={1}>
               <Box display="flex" justifyContent="center">
-                <HeroAvatar src={hero.avatar_url} alt={hero.name} size={96} />
+                <HeroAvatar src={hero.avatar_url} alt={hero.name} size={112} />
               </Box>
               <Stack direction="row" spacing={2}>
-                <Field label="Nome completo:" value={hero.name} />
+                <Field label="Nome completo" value={hero.name} />
                 <Field label="Data de nascimento" value={formatDateOfBirth(hero.date_of_birth)} />
               </Stack>
               <Stack direction="row" spacing={2}>
